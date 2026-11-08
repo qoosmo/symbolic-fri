@@ -1,0 +1,224 @@
+\chapter{Lower Bounds}
+\label{ch:lower-bounds}
+
+This chapter gives explicit, efficient provers that match the query factors of
+\cref{ch:corollaries}. The unique binding bound of \cref{thm:unique-binding} is tight up
+to an additive $O(1/n_1)$ in the per-path factor, for every arity sequence. For promise
+binding and non-equivocation the attacks determine the exact range in which the true
+factor lies, and the remaining gap is reduced to mutual correlated agreement beyond the
+Johnson radius.
+
+%=====================================================================
+\section{A codeword that is invisible to the first fold}
+%=====================================================================
+
+\begin{lemma}[The perturbation $H_Y$]\label{lem:perturbation}
+Let $Y\subseteq D_1$ with $|Y|\le L_1-1$, and put
+\[
+h_Y(Z):=\prod_{y\in Y}(Z-y)\in\F[Z],\qquad H_Y(X):=h_Y(X^{a_1})\in\F[X].
+\]
+Then:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $\deg H_Y<L$, and $H_Y\ne0$;
+\item $H_Y=0$ on $\fib(Y)$, and for $y\in D_1\setminus Y$, $H_Y$ is the nonzero constant
+$h_Y(y)$ on $\fib(y)$;
+\item $\Fold_\beta[H_Y]=h_Y|_{D_1}$ for every $\beta\in\K[T]$;
+\item $f_{H_Y}\ne0$, and for $r$ uniform in $\K^k$,
+$\Pr_r\bigl[f_{H_Y}(rT)=0\bigr]\le d/|\K|$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(i) $\deg H_Y=a_1|Y|\le a_1(L_1-1)<L$. (ii) For $x\in\fib(y)$, $H_Y(x)=h_Y(x^{a_1})=h_Y(y)$,
+which vanishes iff $y\in Y$. (iii) By \cref{lem:components}(iii) with $G_0=h_Y$ and
+$G_j=0$ for $j\ge1$, $u_0[H_Y]=h_Y$ and $u_j[H_Y]=0$ for $j\ge1$. (iv) $f_{H_Y}\ne0$
+because $\kappa$ is injective; the probability bound is the Schwartz--Zippel argument of
+the proof of \cref{thm:identification} applied to a nonzero homogeneous component of
+$f_{H_Y}$.
+\end{proof}
+
+Since $\Fold_\beta[H_Y]$ does not depend on $\beta$, the codewords $F$ and $F-H_Y$ have
+first folds that agree on $Y$ and differ by the constant $h_Y(y)\ne0$ on every other
+point of $D_1$, whatever the challenge. This is the mechanism of all attacks below.
+
+%=====================================================================
+\section{Tightness of unique binding}
+%=====================================================================
+
+\begin{definition}[Attack $\mathcal A_{\mathrm{UB}}$]\label{def:attack-ub}
+Fix $F\in\F[X]_{<L}$. Choose $Y\subseteq D_1$ with $|Y|=L_1-1$ and
+$\mathcal B\subseteq D_1\setminus Y$ with $|\mathcal B|=\lceil\theta n_1\rceil-1$; this
+is possible because $\theta n_1+L_1\le n_1$, i.e.\ $\rho\le\frac{1+\rho}2$. Put
+$V:=F-H_Y$ and
+\[
+W_0:=V\ \text{on}\ \fib(\mathcal B),\qquad W_0:=F\ \text{on}\ D_0\setminus\fib(\mathcal B).
+\]
+For $i\ge1$ the prover commits the honest symbolic fold chain of $V$, i.e.\
+$W_i:=F_i|_{D_i}$ for $f=f_V$ in \cref{prop:honest}, and sends $\gt:=f_V(rT)$.
+\end{definition}
+
+\begin{theorem}[Unique binding is tight]\label{thm:ub-tight}
+$\mathcal A_{\mathrm{UB}}$ runs in time polynomial in $N$, satisfies
+$F_\star(W_0)=F$, and wins the unique binding game with probability at least
+\[
+\Bigl(1-\frac d{|\K|}\Bigr)\Bigl(\frac{1+\rho}2-\frac2{n_1}\Bigr)^{s}.
+\]
+\end{theorem}
+
+\begin{proof}
+$W_0$ is $\F$-valued and $\Db(W_0,F)=|\mathcal B|/n_1<\theta$, so $F_\star(W_0)=F$.
+
+\emph{Passing set.} Layers $i\ge1$ are honest, so every check at layers $1,\dots,k-1$ and
+the terminal check pass, and $P_1^{\mathrm{sym}}=D_1$. At layer $0$ and
+$y\in D_1$:
+\begin{itemize}
+\item if $y\in\mathcal B$, $W_0=V$ on $\fib(y)$, so
+$\Fold_{r_1T}[W_0](y)=\Fold_{r_1T}[V](y)=W_1(y)$;
+\item if $y\in Y$, $H_Y=0$ on $\fib(y)$, so $W_0=F=V$ on $\fib(y)$ and the check passes;
+\item otherwise $W_0=F$ on $\fib(y)$ and
+$\Fold_{r_1T}[W_0](y)-W_1(y)=\Fold_{r_1T}[H_Y](y)=h_Y(y)\ne0$, so the check fails.
+\end{itemize}
+Hence $Q_1^{\mathrm{sym}}=\mathcal B\cup Y$ and
+\[
+\pi^{\mathrm{sym}}_0=\frac{\lceil\theta n_1\rceil-1+L_1-1}{n_1}\ge\theta+\rho-\frac2{n_1}
+=\frac{1+\rho}2-\frac2{n_1}.
+\]
+This holds for every $r$, so $\Pr[\Acc]\ge(\frac{1+\rho}2-\frac2{n_1})^s$ by
+\cref{lem:passing-sym}.
+
+\emph{Wrong value.} $\gt-f_F(rT)=f_V(rT)-f_F(rT)=-f_{H_Y}(rT)$, which is nonzero except
+with probability $d/|\K|$ by \cref{lem:perturbation}(iv). This event depends only on $r$,
+and acceptance has conditional probability $(\pi_0^{\mathrm{sym}})^s$ for every $r$;
+the two bounds multiply.
+\end{proof}
+
+\begin{corollary}[Exact query count]\label{cor:exact-s}
+Let $\lambda>0$ and suppose $\eps_{\mathrm{UD}}+d/(|\K|-1)\le2^{-\lambda-1}$. Every $s$
+with $(\frac{1+\rho}2)^s\le2^{-\lambda-1}$ achieves unique binding error $\le2^{-\lambda}$,
+and every $s$ with
+$(1-\frac d{|\K|})(\frac{1+\rho}2-\frac2{n_1})^s>2^{-\lambda}$ does not.
+\end{corollary}
+
+\begin{proof}
+\Cref{thm:unique-binding,thm:ub-tight}.
+\end{proof}
+
+%=====================================================================
+\section{Promise binding}
+%=====================================================================
+
+\begin{theorem}[Promise attack]\label{thm:promise-attack}
+Let $\delta_0\in[0,1-\rho]$ and $F\in\F[X]_{<L}$. With $Y$ as in
+\cref{def:attack-ub} and $\mathcal B\subseteq D_1\setminus Y$ of size
+$\lfloor\delta_0n_1\rfloor$, the prover of \cref{def:attack-ub} satisfies
+$\Db(W_0,F)\le\delta_0$, sends $\gt\ne f_F(rT)$ with probability at least $1-d/|\K|$, and
+is accepted with probability at least
+\[
+\Bigl(\delta_0+\rho-\frac2{n_1}\Bigr)^{s}.
+\]
+\end{theorem}
+
+\begin{proof}
+$|\mathcal B|+|Y|\le\delta_0n_1+L_1\le n_1$, so $\mathcal B$ exists. The proof of
+\cref{thm:ub-tight} gives $\pi^{\mathrm{sym}}_0=(\lfloor\delta_0n_1\rfloor+L_1-1)/n_1
+\ge\delta_0+\rho-\frac2{n_1}$ and $\gt-f_F(rT)=-f_{H_Y}(rT)$.
+\end{proof}
+
+%=====================================================================
+\section{Equivocation}
+%=====================================================================
+
+\begin{definition}[Attack $\mathcal A_{\mathrm{EQ}}$]\label{def:attack-eq}
+Fix $F\in\F[X]_{<L}$ and $Y\subseteq D_1$ with $|Y|=L_1-1$; put $G_1:=F$,
+$G_2:=F-H_Y$. Partition $D_1\setminus Y=A_1\sqcup A_2$ with
+$|A_1|=\lceil(n_1-L_1+1)/2\rceil$, and set
+\[
+W_0:=G_1\ \text{on}\ \fib(A_1\cup Y),\qquad W_0:=G_2\ \text{on}\ \fib(A_2).
+\]
+In session $j$ the prover commits the honest symbolic fold chain of $G_j$ and sends
+$\gt_j:=f_{G_j}(r^{(j)}T)$.
+\end{definition}
+
+\begin{theorem}[Equivocation attack]\label{thm:eq-attack}
+For every $\alpha\in[\rho,1]$, $\mathcal A_{\mathrm{EQ}}$ wins the equivocation game of
+\cref{def:game-E} with probability at least
+\[
+\Bigl(\frac{1+\rho}2-\frac1{n_1}\Bigr)^{2s}-\frac{2\ell_\alpha d}{|\K|}.
+\]
+\end{theorem}
+
+\begin{proof}
+Since $G_1=G_2$ on $\fib(Y)$, $W_0=G_j$ on $\fib(A_j\cup Y)$ for $j=1,2$. Exactly as in
+the proof of \cref{thm:ub-tight}, session $j$ has
+$Q_1^{\mathrm{sym}}=A_j\cup Y$ for every $r^{(j)}$, hence
+\[
+\pi_j=\frac{|A_j|+L_1-1}{n_1}\ge\frac{\frac{n_1-L_1}2+L_1-1}{n_1}=\frac{1+\rho}2-\frac1{n_1}.
+\]
+The sessions use independent query points, so both accept with probability
+$(\pi_1\pi_2)^s\ge(\frac{1+\rho}2-\frac1{n_1})^{2s}$.
+
+The prover fails to win only if both accept and $G(\tau_1)=G(\tau_2)=G\ne\bot$. Then
+$f_G(r^{(1)}T)=f_{G_1}(r^{(1)}T)$ and $f_G(r^{(2)}T)=f_{G_2}(r^{(2)}T)$ with
+$G\in\Lambda_\alpha(W_0)$; as $G_1\ne G_2$, either $G\ne G_1$ or $G\ne G_2$. For a fixed
+$G\ne G_j$, $\Pr_{r^{(j)}}[f_G(r^{(j)}T)=f_{G_j}(r^{(j)}T)]\le d/|\K|$ by the
+Schwartz--Zippel argument of \cref{thm:identification}; the list is fixed by $W_0$ before
+$r^{(1)},r^{(2)}$ are sampled, and a union bound over $G$ and $j$ gives at most
+$2\ell_\alpha d/|\K|$.
+\end{proof}
+
+\begin{remark}[Unbalanced equivocation]\label{rem:unbalanced}
+Taking $W_0:=G_2$ everywhere and opening $G_1$ in session $1$ gives
+$\pi_1\pi_2=(L_1-1)/n_1=\rho-\frac1{n_1}$. Since $(\frac{1+\rho}2)^2\ge\rho$ by the AM--GM
+inequality, the balanced attack is never worse up to $O(1/n_1)$.
+\end{remark}
+
+%=====================================================================
+\section{Proved versus attacked factors}
+%=====================================================================
+
+The following table compares the per-path factors of \cref{ch:corollaries} with those
+achieved by the attacks of this chapter, up to additive $O(1/n_1)$.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lll}
+\hline
+Notion & Proved factor & Attacked factor\\
+\hline
+Unique binding & $\frac{1+\rho}2$ & $\frac{1+\rho}2$\\
+Promise binding & $\max\bigl(\sqrt\rho+\eta,\ \delta_0+\rho\bigr)$ & $\delta_0+\rho$\\
+Non-equivocation (two sessions) & $\max\bigl(\sqrt\rho+\eta,\ (\frac{1+\rho}2)^2\bigr)$ & $(\frac{1+\rho}2)^2$\\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+\item Unique binding is tight for every $\rho$ and every arity sequence.
+\item Promise binding is tight whenever $\delta_0+\rho\ge\sqrt\rho+\eta$.
+\item Non-equivocation is tight whenever $(\frac{1+\rho}2)^2\ge\sqrt\rho+\eta$; among
+$\rho\in\{\frac12,\frac14,\frac18,\frac1{16}\}$ this is the case only for $\rho=\frac1{16}$
+(with $\eta<0.0322$).
+\end{itemize}
+
+\begin{proposition}[The gap reduces to MCA beyond Johnson]\label{prop:gap-mca}
+Let $\alpha^\ast\in[\rho,\sqrt\rho]$. If $\eps_{\MCA}(1-\alpha^\ast)$ and
+$\ell_{\alpha^\ast}d/|\K|$ are negligible, then \cref{thm:promise} holds with query
+factor $\max(\alpha^\ast,\delta_0+\rho)$ and \cref{thm:equivocation} with
+$\max(\alpha^\ast,(\frac{1+\rho}2)^2)$. In particular both bounds become tight as soon as
+MCA for the univariate powers generator holds with negligible error at agreement
+\[
+\alpha^\ast=\delta_0+\rho\quad\text{(promise binding)},\qquad
+\alpha^\ast=\Bigl(\frac{1+\rho}2\Bigr)^2\quad\text{(non-equivocation)},
+\]
+both of which lie strictly between the capacity bound $\rho$ and the Johnson bound
+$\sqrt\rho$ in the regimes where the gap exists.
+\end{proposition}
+
+\begin{proof}
+\Cref{thm:promise,thm:equivocation} hold for every $\alpha\in[\rho,1]$; their proofs use
+the coding hypothesis only through $\eps_{\MCA}(1-\alpha)$ and the list size
+$\ell_\alpha$. Substitute $\alpha=\alpha^\ast$ and compare with
+\cref{thm:promise-attack,thm:eq-attack}. For the last claim, $(\frac{1+\rho}2)^2>\rho$
+for $\rho<1$, and $\delta_0+\rho>\rho$ for $\delta_0>0$; the upper bound $\sqrt\rho$ is the
+defining condition of the gap.
+\end{proof}
