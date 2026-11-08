@@ -1,0 +1,99 @@
+\chapter{Parameters}
+\label{ch:parameters}
+
+This chapter instantiates the bounds of \cref{ch:corollaries,ch:lower-bounds} for the
+Goldilocks field. All numbers are produced by the Rust crate \texttt{tools/params} of the
+repository; the tables below are generated files and are reproduced by
+\begin{center}
+\texttt{cd tools/params \&\& cargo run --release -- ../../tables/params.tex}
+\end{center}
+
+%=====================================================================
+\section{Instantiation}
+%=====================================================================
+
+\begin{definition}[Goldilocks instantiation]\label{def:goldilocks}
+$q=p:=2^{64}-2^{32}+1$, $\F=\F_p$, $\K=\F_{p^3}$, so $|\K|=p^3\approx2^{192}$. Since
+$p-1=2^{32}\cdot3\cdot5\cdot17\cdot257\cdot65537$, every $N=2^t$ with $t\le32$ satisfies
+$N\mid p-1$, and \cref{def:domain} applies to every power-of-two arity sequence. We fix
+$L=2^{20}$, $B=1/\rho\in\{2,4,8,16\}$, uniform arity $a\in\{2,4,16\}$ with $k=20/\log_2a$
+rounds, and target $\lambda=128$.
+\end{definition}
+
+The error terms of \cref{thm:unique-binding} are, for these parameters,
+\[
+\eps_{\mathrm{UD}}=\frac{N-B}{p^3}\le2^{-168},\qquad
+\frac d{p^3-1}\le\frac{75}{p^3-1}<2^{-185},
+\]
+so the bound is governed by the query term $(\frac{1+\rho}2)^s$.
+
+%=====================================================================
+\section{Unique binding}
+%=====================================================================
+
+\input{tables/params}
+
+\begin{proposition}[Exact query counts]\label{prop:exact-counts}
+For the parameters of \cref{def:goldilocks} and $\lambda=128$, the smallest $s$ for which
+the unique binding error is at most $2^{-128}$ is
+\[
+s=309,\ 189,\ 155,\ 141\qquad\text{for}\qquad \rho=\tfrac12,\ \tfrac14,\ \tfrac18,\ \tfrac1{16},
+\]
+for every arity $a\in\{2,4,16\}$.
+\end{proposition}
+
+\begin{proof}
+For each row of \cref{tab:unique}, $s_A$ is the smallest $s$ with
+$\eps_{\mathrm{UD}}+d/(|\K|-1)+(\frac{1+\rho}2)^s\le2^{-128}$, so $s_A$ suffices by
+\cref{thm:unique-binding}; $s_{\mathrm{att}}$ is the smallest $s$ with
+$(1-d/|\K|)(\frac{1+\rho}2-\frac2{n_1})^s\le2^{-128}$, so every $s<s_{\mathrm{att}}$ is
+broken by \cref{thm:ub-tight}. In every row $s_A=s_{\mathrm{att}}$.
+\end{proof}
+
+\begin{remark}[Cost of the symbolic layer]\label{rem:cost}
+With leaves grouped by fibre and $W_k$ omitted, one query path opens, at layer $i<k$, one
+fibre of $a$ leaves; a leaf of layer $i\ge1$ carries $d_i+1=i(a-1)+1$ coefficients in
+$\K$, and layer-$0$ leaves carry one element of $\F$. Hence
+\[
+\text{elements per path}=\sum_{i=0}^{k-1}a\bigl(i(a-1)+1\bigr)=ak+\frac{a(a-1)k(k-1)}2,
+\]
+against $ak$ for scalar FRI with the same arities. The Merkle cost per path is
+$\sum_{i<k}\log_2n_{i+1}$ hashes. The proof sizes in \cref{tab:unique} use $8$ bytes per
+element of $\F$, $24$ bytes per element of $\K$ and $32$-byte hashes, without
+deduplication of shared authentication paths; they are upper estimates.
+For fixed $\rho$, arities $2$ and $4$ give proof sizes within $3\%$ of each other (arity
+$4$ trades half the Merkle layers for more opened coefficients), while arity $16$ costs
+$3.4$--$3.6$ times more, because the $T$-degrees grow quadratically in the number of
+coefficients per fibre.
+\end{remark}
+
+%=====================================================================
+\section{The Johnson regime}
+%=====================================================================
+
+\begin{remark}[Provisional status of \cref{tab:johnson}]\label{rem:johnson-provisional}
+\Cref{tab:johnson} evaluates \cref{thm:proximity,thm:promise,thm:session,thm:equivocation}
+at $\alpha=\sqrt\rho+\eta$ with $\eta=0.02$, the list size
+$\ell_\alpha=\lfloor\frac{\alpha-\rho}{\alpha^2-\rho}\rfloor$ of
+\cref{prop:list-size}, and the root-count terms $\eps_{\mathrm{SZ}}(\ell_\alpha)$, but with
+$\eps^J_{\MCA}$ set to $0$. The columns become theorems once
+$\sum_{i<k}\eps^J_{\MCA}(n_{i+1},\rho,2,\eta,p^3)\le2^{-130}$ is verified from the explicit
+constant of \cref{thm:mca-johnson}. With an MCA error of the form
+$C_\rho\,n/(\eta^{c}|\K|)$ this requires
+$C_\rho\,\eta^{-c}\le2^{192-130-\log_2(2N)}$, i.e.\ $C_\rho\,\eta^{-c}\le2^{37}$ for
+$N\le2^{24}$; with the bound of~\cite{BCIKS20}, quadratic in $n$, it fails for $\eta=0.02$.
+\end{remark}
+
+\begin{remark}[Reading \cref{tab:johnson}]\label{rem:johnson-reading}
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $s_J$ applies to proximity, to session uniqueness, and to promise binding with
+$\delta_0\le\sqrt\rho+\eta-\rho$. It is independent of the arity up to the term
+$d/|\K|$.
+\item $s_E$ and $s_{E,\mathrm{att}}$ coincide for $\rho=\frac1{16}$, where
+$M=(\frac{17}{32})^2$: non-equivocation is then tight with $s=71$. For
+$\rho\in\{\frac12,\frac14,\frac18\}$ the gap between $s_{E,\mathrm{att}}$ and $s_E$ is the
+gap of \cref{prop:gap-mca}.
+\item Unique binding cannot use the Johnson columns: by \cref{thm:ub-tight} the values
+$s_A$ of \cref{tab:unique} are necessary for that notion.
+\end{enumerate}
+\end{remark}

@@ -1,0 +1,7 @@
+[package]
+name = "sfri-params"
+version = "0.1.0"
+edition = "2021"
+description = "Parameter tables for Randomized Symbolic FRI (Chapter 7)"
+
+[dependencies]
