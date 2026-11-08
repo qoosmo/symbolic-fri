@@ -5,3 +5,6 @@ edition = "2021"
 description = "Parameter tables for Randomized Symbolic FRI (Chapter 7)"
 
 [dependencies]
+
+# Standalone crate: do not search parent directories for a workspace.
+[workspace]
