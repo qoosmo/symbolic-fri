@@ -1,0 +1,239 @@
+\chapter{Agreement, Lists and Mutual Correlated Agreement}
+\label{ch:mca}
+
+This chapter isolates the only coding-theoretic input of the soundness analysis:
+\emph{mutual correlated agreement} (MCA) for the univariate powers generator
+$\beta\mapsto(1,\beta,\dots,\beta^{a-1})$, which is exactly the generator of the fold
+operator of \cref{def:fold}. In the unique-decoding regime MCA is proved here from the
+proximity gap for curves; up to the Johnson radius it is imported. The chapter also
+proves the unique block decoding lemma and the Johnson list bound for block agreement,
+which are used to identify the reference polynomial in later chapters.
+
+Throughout, $E\subseteq\K$ is a set of $n$ distinct points, $\ell\le n$,
+$C:=\RS[\K,E,\ell]=\{P|_E:P\in\K[X],\deg P<\ell\}$ and $\rho:=\ell/n$.
+
+%=====================================================================
+\section{Mutual correlated agreement}
+%=====================================================================
+
+\begin{definition}[Bad challenges, MCA error]\label{def:mca}
+Let $a\ge2$, $u=(u_0,\dots,u_{a-1})$ with $u_j:E\to\K$, and $\delta\in[0,1)$. A challenge
+$\beta\in\K$ is \emph{bad} for $(u,\delta)$ if there exist $S\subseteq E$ with
+$|S|\ge(1-\delta)n$ and $v\in C$ such that
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $\sum_{j<a}\beta^ju_j(x)=v(x)$ for all $x\in S$, and
+\item there is no tuple $(v_0,\dots,v_{a-1})\in C^a$ with $u_j|_S=v_j|_S$ for all $j<a$.
+\end{enumerate}
+Let $\Bad(u,\delta)\subseteq\K$ be the set of bad challenges and
+\[
+\eps_{\MCA}(C,a,\delta):=\max_{u\in(\K^E)^a}\frac{|\Bad(u,\delta)|}{|\K|}.
+\]
+\end{definition}
+
+\begin{remark}\label{rem:mca-monotone}
+If $\delta\le\delta'$ then $\Bad(u,\delta)\subseteq\Bad(u,\delta')$, so
+$\eps_{\MCA}(C,a,\cdot)$ is non-decreasing. The word ``mutual'' refers to the fact that
+the set $S$ in the conclusion is the \emph{same} set on which the combination agrees with
+$v$; ordinary correlated agreement only asserts the existence of some large set.
+\end{remark}
+
+The following lemma translates \cref{def:mca} into the language of folding. Fix
+$0\le i<k$, $a:=a_{i+1}$, and take $E=D_{i+1}$, $C=\RS_{i+1}$, so $n=n_{i+1}$ and
+$\ell=L_{i+1}$.
+
+\begin{lemma}[MCA in folding form]\label{lem:mca-fold}
+Let $w:D_i\to\K$, $u:=(u_j[w])_{j<a}$, $\delta\in[0,1-\rho]$ and $\beta\notin\Bad(u,\delta)$.
+If $S\subseteq D_{i+1}$ with $|S|\ge(1-\delta)n_{i+1}$ and $V\in\RS_{i+1}$ satisfy
+$\Fold_\beta[w]=V$ on $S$, then there exists $G\in\RS_i$ with
+\[
+w=G\ \text{on}\ \fib(S):=\textstyle\bigcup_{y\in S}\fib(y)
+\qquad\text{and}\qquad \Fold_\beta[G]=V .
+\]
+\end{lemma}
+
+\begin{proof}
+Since $\Fold_\beta[w]=\sum_j\beta^ju_j$ and $\beta$ is not bad, there are
+$v_0,\dots,v_{a-1}\in\RS_{i+1}$ with $u_j[w]=v_j$ on $S$. Put
+$G(X):=\sum_{j<a}X^jv_j(X^{a})$; then $\deg G<aL_{i+1}=L_i$ and $u_j[G]=v_j$ by
+\cref{lem:components}(iii). For $y\in S$ the component vectors of $w$ and $G$ at $y$
+coincide, hence $w=G$ on $\fib(y)$ by \cref{lem:components}(ii). Finally
+$\Fold_\beta[G]=\sum_j\beta^jv_j\in\RS_{i+1}$ agrees with $V$ on $S$, and
+$|S|\ge(1-\delta)n_{i+1}\ge\rho n_{i+1}=L_{i+1}$; two polynomials of degree $<L_{i+1}$
+agreeing on $L_{i+1}$ points are equal.
+\end{proof}
+
+%=====================================================================
+\section{Unique block decoding}
+%=====================================================================
+
+Put $\theta:=(1-\rho)/2$.
+
+\begin{lemma}[Unique block decoding]\label{lem:unique-block}
+Let $0\le i<k$ and $w:D_i\to\K$. There is at most one $G\in\K[X]_{<L_i}$ with
+$\Db(w,G)<\theta$. If moreover $w$ takes values in $\F$, this $G$ lies in $\F[X]$.
+\end{lemma}
+
+\begin{proof}
+If $\Db(w,G)<\theta$ and $\Db(w,G')<\theta$, then $G$ and $G'$ agree on more than
+$(1-2\theta)n_{i+1}=\rho n_{i+1}=L_{i+1}$ fibres, contradicting
+\cref{lem:codeword-fibres} unless $G=G'$.
+For the second claim let $\phi$ be the $q$-power Frobenius of $\K/\F$, acting on
+coefficients. Since $D_i\subseteq\F$ and $w$ is $\F$-valued,
+$\phi(G)(x)=\phi(G(x))$ and $\phi(w(x))=w(x)$ for $x\in D_i$, so
+$w(x)=G(x)\iff w(x)=\phi(G)(x)$. Hence $\Db(w,\phi(G))=\Db(w,G)<\theta$ and
+$\phi(G)=G$ by uniqueness, i.e.\ $G\in\F[X]$.
+\end{proof}
+
+%=====================================================================
+\section{The unique-decoding regime}
+%=====================================================================
+
+The only imported statement of this section is the proximity gap for parameterized
+curves of Ben-Sasson, Carmon, Ishai, Kopparty and Saraf.
+
+\begin{theorem}[Proximity gaps for curves, unique decoding {\cite[Thm.~1.5]{BCIKS20}}]
+\label{thm:bciks-ud}
+Let $a\ge2$, $u_0,\dots,u_{a-1}:E\to\K$ and $\delta\in[0,(1-\rho)/2)$. If
+\[
+\#\Bigl\{\beta\in\K:\ \Delta\Bigl(\textstyle\sum_{j<a}\beta^ju_j,\ C\Bigr)\le\delta\Bigr\}>(a-1)\,n,
+\]
+then there exist $S\subseteq E$ with $|S|\ge(1-\delta)n$ and $v_0,\dots,v_{a-1}\in C$ with
+$u_j|_S=v_j|_S$ for all $j$.
+\end{theorem}
+
+\begin{proposition}[MCA in the unique-decoding regime]\label{prop:mca-ud}
+For $0\le i<k$, $a=a_{i+1}$ and every $\delta\in[0,\theta)$,
+\[
+\eps_{\MCA}(\RS_{i+1},a,\delta)\le\frac{(a-1)\,n_{i+1}}{|\K|}.
+\]
+More precisely, for every $w:D_i\to\K$ there is a set $\mathcal E(w)\subseteq\K$ with
+$|\mathcal E(w)|\le(a-1)n_{i+1}$, depending only on $w$, such that
+$\Bad(u[w],\delta)\subseteq\mathcal E(w)$ for \emph{all} $\delta<\theta$ simultaneously.
+\end{proposition}
+
+\begin{proof}
+By \cref{lem:components}(ii), every $u\in(\K^{D_{i+1}})^a$ equals $u[w]$ for a unique
+$w:D_i\to\K$, so it suffices to treat $u=u[w]$. Write $n:=n_{i+1}$ and
+$C:=\RS_{i+1}$.
+
+\emph{Case 1: $\Db(w,\RS_i)\ge\theta$.} Let $\mathcal E(w):=\{\beta:\Delta(\Fold_\beta[w],C)<\theta\}$.
+Every bad $\beta$ for $(u,\delta)$ with $\delta<\theta$ lies in $\mathcal E(w)$, since
+condition (i) of \cref{def:mca} gives $\Delta(\Fold_\beta[w],C)\le\delta$. Suppose
+$|\mathcal E(w)|>(a-1)n$. The values $\Delta(\Fold_\beta[w],C)$ lie in
+$\frac1n\Z$; let $\delta^\ast$ be the largest element of $\frac1n\Z$ below $\theta$. Then
+$\mathcal E(w)=\{\beta:\Delta(\Fold_\beta[w],C)\le\delta^\ast\}$ and $\delta^\ast<\theta$,
+so \cref{thm:bciks-ud} yields $S$ with $|S|\ge(1-\delta^\ast)n$ and $v_j\in C$ with
+$u_j[w]=v_j$ on $S$. As in the proof of \cref{lem:mca-fold}, $G:=\sum_jX^jv_j(X^a)$
+satisfies $w=G$ on $\fib(S)$, so $\Db(w,G)\le\delta^\ast<\theta$, a contradiction. Hence
+$|\mathcal E(w)|\le(a-1)n$.
+
+\emph{Case 2: $\Db(w,\RS_i)<\theta$.} Let $G$ be the unique polynomial of
+\cref{lem:unique-block}, and let $Y:=\{y\in D_{i+1}: w|_{\fib(y)}\ne G|_{\fib(y)}\}$, so
+$|Y|<\theta n$. For $y\in Y$ the polynomial
+\[
+p_y(\beta):=\sum_{j<a}\beta^j\bigl(u_j[w](y)-u_j[G](y)\bigr)\in\K[\beta]
+\]
+is nonzero by \cref{lem:components}(ii) and has degree $\le a-1$. Let
+$\mathcal E(w):=\bigcup_{y\in Y}p_y^{-1}(0)$, so $|\mathcal E(w)|\le(a-1)|Y|<(a-1)n$.
+
+Let $\beta\notin\mathcal E(w)$ and let $S,v$ be as in \cref{def:mca}(i) with
+$\delta<\theta$. Then $\Fold_\beta[w](y)\ne\Fold_\beta[G](y)$ exactly for $y\in Y$.
+The codewords $v$ and $\Fold_\beta[G]$ (the latter in $C$ by \cref{lem:fold-poly})
+can disagree only on $(D_{i+1}\setminus S)\cup Y$, a set of size
+$<\delta n+\theta n<2\theta n=(1-\rho)n$. So they agree on more than $\rho n=L_{i+1}$
+points and $v=\Fold_\beta[G]$. On $S$ we then have
+$\Fold_\beta[w]=v=\Fold_\beta[G]$, hence $S\cap Y=\emptyset$, hence
+$u_j[w]=u_j[G]$ on $S$ for all $j$, and $(u_j[G])_j\in C^a$ by \cref{lem:components}(iii).
+Condition (ii) of \cref{def:mca} fails, so $\beta$ is not bad.
+\end{proof}
+
+\begin{corollary}[Accumulated unique-decoding error]\label{cor:mca-ud-sum}
+For every $\delta<\theta$,
+\[
+\sum_{i=0}^{k-1}\eps_{\MCA}(\RS_{i+1},a_{i+1},\delta)\le\frac{N-B}{|\K|}.
+\]
+\end{corollary}
+
+\begin{proof}
+$(a_{i+1}-1)n_{i+1}=n_i-n_{i+1}$ by \cref{lem:fibres}, and
+$\sum_{i<k}(n_i-n_{i+1})=n_0-n_k=N-B$.
+\end{proof}
+
+%=====================================================================
+\section{The Johnson regime}
+%=====================================================================
+
+The univariate powers generator is a polynomial generator in the sense of Bordage,
+Chiesa, Guan and Manzur, who prove mutual correlated agreement for all polynomial
+generators and Reed--Solomon codes up to the Johnson radius~\cite{BCGM26}. We record
+the statement in the form used here.
+
+\begin{theorem}[MCA up to the Johnson radius {\cite{BCGM26}}]\label{thm:mca-johnson}
+For every $a\ge2$ and $\eta\in(0,1-\sqrt\rho)$ there is an explicit quantity
+$\eps^{J}_{\MCA}(n,\rho,a,\eta,|\K|)$ such that
+\[
+\eps_{\MCA}\bigl(\RS[\K,E,\ell],a,\,1-\sqrt\rho-\eta\bigr)\le\eps^{J}_{\MCA}(n,\rho,a,\eta,|\K|).
+\]
+\end{theorem}
+
+\begin{remark}[Instantiation of $\eps^J_{\MCA}$]\label{rem:johnson-constants}
+The parameter sets of the parameter chapter use $\eps^J_{\MCA}$ only through the sum
+$\sum_{i<k}\eps^J_{\MCA}(n_{i+1},\rho,a_{i+1},\eta,|\K|)$. The original correlated
+agreement bound of~\cite{BCIKS20} in this regime is quadratic in $n$; the bounds
+of~\cite{BCHKS25} (correlated agreement) and~\cite{DKT26} (mutual correlated agreement)
+are linear in $n$ with polynomial dependence on $1/\eta$, and these are the relevant
+ones for $|\K|\approx2^{192}$ and $n\le2^{24}$. The explicit constants are inserted in the parameter chapter.
+\end{remark}
+
+%=====================================================================
+\section{Block lists and the Johnson list bound}
+%=====================================================================
+
+\begin{definition}[Block list]\label{def:block-list}
+For $w:D_0\to\K$ and $\alpha\in(0,1]$,
+\[
+\Lambda_\alpha(w):=\bigl\{G\in\K[X]_{<L}:\ \agr(w,G)\ge\alpha\bigr\},\qquad
+\ell_\alpha:=\max_{w}|\Lambda_\alpha(w)| .
+\]
+\end{definition}
+
+\begin{proposition}[List sizes]\label{prop:list-size}
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item If $\alpha>\frac{1+\rho}2$ then $\ell_\alpha\le1$.
+\item If $\alpha>\sqrt\rho$ then
+\[
+\ell_\alpha\le\frac{\alpha-\rho}{\alpha^2-\rho}.
+\]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) is \cref{lem:unique-block} with $i=0$, since $\agr>\frac{1+\rho}2$ means
+$\Db<\theta$.
+
+(ii) Write $n:=n_1$ and let $G_1,\dots,G_M\in\Lambda_\alpha(w)$ be distinct. Let
+$t:=\lceil\alpha n\rceil$ and choose sets $S_r\subseteq D_1$ with $|S_r|=t$ such that
+$w=G_r$ on $\fib(y)$ for every $y\in S_r$. For $y\in D_1$ let
+$c_y:=\#\{r: y\in S_r\}$. Then $\sum_yc_y=Mt$. If $y\in S_r\cap S_{r'}$ with $r\ne r'$,
+then $G_r=w=G_{r'}$ on $\fib(y)$; by \cref{lem:codeword-fibres} each pair $r\ne r'$ has
+fewer than $\rho n$ such $y$, so
+\[
+\sum_yc_y(c_y-1)=\sum_{r\ne r'}|S_r\cap S_{r'}|\le M(M-1)\rho n .
+\]
+By Cauchy--Schwarz $\sum_yc_y^2\ge(Mt)^2/n$. Hence
+$(Mt)^2/n-Mt\le M(M-1)\rho n$; dividing by $Mn$ and writing $x:=t/n\ge\alpha$,
+\[
+M(x^2-\rho)\le x-\rho .
+\]
+Since $x\ge\alpha>\sqrt\rho$, $x^2-\rho>0$ and $M\le\frac{x-\rho}{x^2-\rho}$. The function
+$x\mapsto\frac{x-\rho}{x^2-\rho}$ is decreasing on $(\sqrt\rho,1]$: its derivative has
+numerator $-(x^2-2\rho x+\rho)=-\bigl((x-\rho)^2+\rho(1-\rho)\bigr)<0$. Therefore
+$M\le\frac{\alpha-\rho}{\alpha^2-\rho}$.
+\end{proof}
+
+\begin{remark}\label{rem:list-galois}
+If $w$ is $\F$-valued, the argument of \cref{lem:unique-block} shows that
+$\Lambda_\alpha(w)$ is stable under the Frobenius of $\K/\F$. In the regime of
+\cref{prop:list-size}(i) its unique element is therefore in $\F[X]$; in the regime of
+\cref{prop:list-size}(ii) elements of the list may have coefficients in $\K\setminus\F$.
+\end{remark}
