@@ -1,0 +1,215 @@
+\chapter{From Symbolic to Scalar: The Main Binding Theorem}
+\label{ch:specialization}
+
+The symbolic protocol checks polynomial identities in $T$. Evaluating every word at a
+single point $T=c$ turns a symbolic transcript into a scalar one with challenges
+$\beta_i=cr_i$ (\cref{lem:specialization}). This chapter makes the reduction exact: an
+analysis-only point $c$, uniform and independent of the protocol, couples the symbolic
+game with a scalar game, so that the master path lemma applies at $T=c$; a root count
+in $c$ then lifts the scalar conclusion to an identity of polynomials in $T$.
+
+%=====================================================================
+\section{The symbolic game}
+%=====================================================================
+
+\begin{definition}[Symbolic game]\label{def:symbolic-game}
+A \emph{symbolic prover} $\mathsf P^\ast$ is an arbitrary (unbounded, possibly
+randomized) strategy for \cref{prot:sfri}, with the following conventions.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $W_0:D_0\to\F$ (leaves of $T$-degree $0$; non-constant leaves are rejected).
+\item $W_{i}:D_{i}\to\K[T]$ for $1\le i\le k$, with \emph{no} restriction on the $T$-degree.
+\item $\gt\in\K[T]$ with $\deg\gt\le d$ (otherwise $\mathsf V$ rejects).
+\end{enumerate}
+The \emph{symbolic commit transcript} is
+$\tau:=(W_0,r_1,W_1,\dots,r_k,W_k,\gt)$; $r:=(r_1,\dots,r_k)$. The symbolic passing sets
+$P_i^{\mathrm{sym}},Q_{i+1}^{\mathrm{sym}}$ and $\pi^{\mathrm{sym}}_i$ are defined as in
+\cref{def:passing}, with every equality read in $\K[T]$, $\Fold_{\beta_{i+1}}$ replaced by
+$\Fold_{r_{i+1}T}$, and $g$ replaced by $\gt$. $\Acc$ denotes acceptance of
+\cref{prot:sfri}.
+\end{definition}
+
+Allowing arbitrary $T$-degrees in (ii) only strengthens the prover; the analysis below
+never uses a degree bound on intermediate layers.
+
+\begin{lemma}[Passing sets in the symbolic game]\label{lem:passing-sym}
+\cref{lem:passing} holds verbatim for the symbolic game; in particular
+$\Pr[\Acc\mid\tau]=(\pi^{\mathrm{sym}}_0)^s$ and $\pi^{\mathrm{sym}}_i\le\pi^{\mathrm{sym}}_{i+1}$.
+\end{lemma}
+
+\begin{proof}
+The proof of \cref{lem:passing} uses only the shape of the checks, not the value ring.
+\end{proof}
+
+\begin{definition}[Specialized transcript]\label{def:specialized}
+For $c\in\K$ and a symbolic commit transcript $\tau$, the \emph{specialization at $c$} is
+the scalar commit transcript
+\[
+\tau^{(c)}:=\bigl(W_0,\ cr_1,\ W_1^{(c)},\ \dots,\ cr_k,\ W_k^{(c)},\ \gt(c)\bigr),
+\qquad W_i^{(c)}(x):=W_i(x)(c).
+\]
+Its passing sets and passing ratios are denoted $P_i^{(c)}$, $\pi_i^{(c)}$.
+\end{definition}
+
+\begin{lemma}[Specialization enlarges passing sets]\label{lem:spec-passing}
+For every $c\in\K$ and $0\le i\le k$: $P_i^{\mathrm{sym}}\subseteq P_i^{(c)}$. In
+particular $\pi^{\mathrm{sym}}_0\le\pi^{(c)}_0$.
+\end{lemma}
+
+\begin{proof}
+Descending induction. If $W_k(y)=\gt$ in $\K[T]$ then $W_k^{(c)}(y)=\gt(c)$, so
+$P_k^{\mathrm{sym}}\subseteq P_k^{(c)}$. If $y\in Q^{\mathrm{sym}}_{i+1}$, then
+$y\in P^{\mathrm{sym}}_{i+1}\subseteq P^{(c)}_{i+1}$ and, by \cref{lem:specialization},
+$W^{(c)}_{i+1}(y)=\Fold_{rT}[W_i](y)|_{T=c}=\Fold_{cr_{i+1}}[W_i^{(c)}](y)$, so
+$y\in Q^{(c)}_{i+1}$. Taking preimages under $\sigma_{i+1}$ gives
+$P^{\mathrm{sym}}_i\subseteq P^{(c)}_i$.
+\end{proof}
+
+%=====================================================================
+\section{The coupling}
+%=====================================================================
+
+\begin{lemma}[Coupling]\label{lem:coupling}
+Let $\mathsf P^\ast$ be a symbolic prover. Consider the experiment that samples
+$c\leftarrow\K^\times$ uniformly and independently, then runs the symbolic game with
+$\mathsf P^\ast$. Define the scalar prover $\mathsf A$ whose coins are $c$ together with
+the coins of $\mathsf P^\ast$: it outputs $W_0$; on receiving $\beta_{i+1}$ it sets
+$r_{i+1}:=\beta_{i+1}/c$, feeds $r_{i+1}$ to $\mathsf P^\ast$, and outputs
+$W_{i+1}^{(c)}$; finally it outputs $\gt(c)$. Then:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item the joint law of $(c,\tau)$ in the scalar game with $\mathsf A$ (where $\tau$ is the
+symbolic transcript simulated by $\mathsf A$) equals the joint law of $(c,\tau)$ in the
+experiment;
+\item the scalar commit transcript produced by $\mathsf A$ is $\tau^{(c)}$;
+\item in the experiment, $c$ is independent of $\tau$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(ii) holds by construction. For (i), condition on $c$, the coins of $\mathsf P^\ast$ and
+the history up to $W_i$. In the scalar game $\beta_{i+1}$ is uniform on $\K$ and
+independent of this conditioning; since $\beta\mapsto\beta/c$ is a bijection of $\K$,
+$r_{i+1}=\beta_{i+1}/c$ is uniform on $\K$ and independent of it as well, which is its law
+in the experiment. Induction over $i$ gives (i). (iii) holds by definition of the
+experiment.
+\end{proof}
+
+%=====================================================================
+\section{The main theorem}
+%=====================================================================
+
+Recall $\Lambda_\alpha(W_0)$ (\cref{def:block-list}), $\ell_\alpha$, $f_G=\kappa^{-1}(G)$
+and the degree cap $d=\sum_i(a_i-1)$. For $G\in\K[X]_{<L}$, $f_G(rT)$ abbreviates
+$f_G(r_1T,\dots,r_kT)\in\K[T]$; its degree is at most the total degree of $f_G$, hence at
+most $d$.
+
+\begin{theorem}[Symbolic list binding]\label{thm:symbolic-list}
+Let $\alpha\in[\rho,1]$ and $\delta:=1-\alpha$. For every symbolic prover,
+\[
+\Pr\Bigl[\Acc\ \wedge\ \gt\notin\bigl\{f_G(rT):G\in\Lambda_\alpha(W_0)\bigr\}\Bigr]
+\ \le\ \eps_{\MCA}(\delta)+\frac{\ell_\alpha\,d}{|\K|-1}+\alpha^{s}.
+\]
+\end{theorem}
+
+\begin{proof}
+Work in the experiment of \cref{lem:coupling}; adding the independent $c$ does not change
+the probability of any event of the symbolic game. Let $\mathsf{Win}$ be the event in
+the statement and $\mathsf{Bad}^{(c)}$ the event $\mathsf{Bad}(\delta)$ of
+\cref{def:bad-event} for $\tau^{(c)}$. By \cref{lem:coupling}(i),(ii) and
+\cref{lem:bad-prob} applied to $\mathsf A$,
+$\Pr[\mathsf{Bad}^{(c)}]\le\eps_{\MCA}(\delta)$.
+
+Define, as a function of $\tau$,
+\[
+Z(\tau):=\bigl\{c'\in\K^\times:\ \exists G\in\Lambda_\alpha(W_0)\ \text{with}\ \gt(c')=f_G(c'r)\bigr\}.
+\]
+If $\gt\notin\{f_G(rT):G\in\Lambda_\alpha(W_0)\}$, each $\gt-f_G(rT)$ is a nonzero
+polynomial of degree $\le d$, so $|Z(\tau)|\le\ell_\alpha d$. As $c$ is uniform on
+$\K^\times$ and independent of $\tau$ (\cref{lem:coupling}(iii)),
+\[
+\Pr\bigl[\mathsf{Win}\wedge c\in Z(\tau)\bigr]\le\frac{\ell_\alpha d}{|\K|-1}.
+\]
+
+Now fix $\tau$ and $c$ such that
+$\gt\notin\{f_G(rT):G\in\Lambda_\alpha(W_0)\}$, $\neg\mathsf{Bad}^{(c)}$ and
+$c\notin Z(\tau)$. Suppose $\pi^{\mathrm{sym}}_0\ge\alpha$. Then
+$\pi^{(c)}_0\ge\alpha$ by \cref{lem:spec-passing}, and \cref{lem:master} applied to
+$\tau^{(c)}$ yields $V_0\in\Lambda_\alpha(W_0)$ with
+$\widehat V_0(cr)=\gt(c)$, i.e.\ $f_{V_0}(cr)=\gt(c)$ by \cref{lem:full-fold}. Here we
+used that the initial word of $\tau^{(c)}$ is $W_0$ itself, because $W_0$ does not depend
+on $T$. This means $c\in Z(\tau)$, a contradiction. Hence
+$\pi^{\mathrm{sym}}_0<\alpha$ and $\Pr[\Acc\mid\tau]\le\alpha^s$ by
+\cref{lem:passing-sym}. Summing the three contributions proves the theorem.
+\end{proof}
+
+\begin{definition}[Opened polynomial]\label{def:opened}
+For a symbolic commit transcript $\tau$ let $G(\tau)$ be the unique
+$G\in\Lambda_\alpha(W_0)$ with $f_G(rT)=\gt$ if exactly one such $G$ exists, and
+$G(\tau):=\bot$ otherwise.
+\end{definition}
+
+\begin{theorem}[Identification and agreement]\label{thm:identification}
+Let $\alpha\in[\rho,1]$, $\delta:=1-\alpha$, and let $\mathsf E$ be the event
+\[
+\pi^{\mathrm{sym}}_0\ge\alpha\quad\text{and}\quad
+\bigl(G(\tau)=\bot\ \ \vee\ \ \pi^{\mathrm{sym}}_0>\agr(W_0,G(\tau))\bigr).
+\]
+For every symbolic prover,
+\[
+\Pr[\mathsf E]\le\eps_{\MCA}(\delta)+\Bigl(\ell_\alpha+\binom{\ell_\alpha}2\Bigr)\frac{d}{|\K|-1}.
+\]
+\end{theorem}
+
+\begin{proof}
+Work in the coupled experiment. Let $\mathsf{Inj}$ be the event that
+$G\mapsto f_G(rT)$ is injective on $\Lambda_\alpha(W_0)$. For $G\ne G'$ in the list,
+$h:=f_G-f_{G'}\ne0$; write $h=\sum_th_t$ with $h_t$ homogeneous of degree $t$ and pick $t$
+with $h_t\ne0$. Then $h(rT)=\sum_th_t(r)T^t$, so $h(rT)=0$ forces $h_t(r)=0$, which has
+probability at most $t/|\K|\le d/|\K|$ over $r$ uniform in $\K^k$ (Schwartz--Zippel). Since
+$\Lambda_\alpha(W_0)$ is fixed before $r$ is sampled,
+$\Pr[\neg\mathsf{Inj}]\le\binom{\ell_\alpha}2d/|\K|$.
+
+Assume $\neg\mathsf{Bad}^{(c)}$ and $\pi^{\mathrm{sym}}_0\ge\alpha$. As in the proof of
+\cref{thm:symbolic-list}, \cref{lem:spec-passing,lem:master} give
+$G_c\in\Lambda_\alpha(W_0)$ with $f_{G_c}(cr)=\gt(c)$ and
+$\pi^{\mathrm{sym}}_0\le\pi^{(c)}_0\le\agr(W_0,G_c)$. If moreover $\mathsf{Inj}$ holds
+and $G(\tau)=G_c$, then $\mathsf E$ fails. Otherwise either $\neg\mathsf{Inj}$, or
+$\mathsf{Inj}$ holds and $c$ is a root of the nonzero polynomial $\gt-f_{G'}(rT)$ for some
+$G'\in\Lambda_\alpha(W_0)$ with $f_{G'}(rT)\ne\gt$ (namely $G'=G_c$); the latter set of
+$c$ has size at most $\ell_\alpha d$ and is determined by $\tau$, so it has probability at
+most $\ell_\alpha d/(|\K|-1)$.
+\end{proof}
+
+%=====================================================================
+\section{Remarks on the protocol}
+%=====================================================================
+
+\begin{remark}[Which degree checks matter]\label{rem:degree-checks}
+The analysis uses exactly two syntactic checks.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item \emph{$W_0$ is $T$-free.} This makes the initial word of $\tau^{(c)}$, hence the
+list $\Lambda_\alpha(W_0)$ and the reference $F_\star(W_0)$, independent of $c$. Without
+it the root count in $c$ is not available.
+\item \emph{$\deg\gt\le d$.} This bounds the number of roots of $\gt-f_G(rT)$. A cap
+$d'\ge d$ would replace $d$ by $d'$ in all bounds.
+\end{enumerate}
+The caps $d_i$ for $1\le i<k$ only fix the encoding length of the oracles.
+\end{remark}
+
+\begin{remark}[Checking at a single random point]\label{rem:single-point}
+Consider the variant of \cref{prot:sfri} in which, after $\gt$ is sent, $\mathsf V$
+samples $c'\leftarrow\K^\times$ and performs every check Q2--Q3 only at $T=c'$. The proof
+of \cref{thm:symbolic-list} applies with $c:=c'$: acceptance now has conditional
+probability $(\pi^{(c')}_0)^s$, the point $c'$ is independent of $\tau$, and outside
+$\mathsf{Bad}^{(c')}\cup\{c'\in Z(\tau)\}$ the master path lemma forces
+$\pi^{(c')}_0<\alpha$. Hence the bound of \cref{thm:symbolic-list} holds verbatim for
+this variant. The opened data per query are unchanged; only the verifier's arithmetic
+changes.
+\end{remark}
+
+\begin{remark}[Reuse of evaluations]\label{rem:reuse}
+Outside the event of \cref{thm:symbolic-list}, $\gt=f_G(rT)$ as polynomials for some
+$G\in\Lambda_\alpha(W_0)$. Then $\gt(c'')=f_G(c''r_1,\dots,c''r_k)$ holds for all
+$c''\in\K$ simultaneously, with no additional error per evaluation and no union bound
+over the number of evaluations. The certified set is the line
+$\{c''r:c''\in\K\}\subseteq\K^k$ through the origin in the direction $r$.
+\end{remark}
