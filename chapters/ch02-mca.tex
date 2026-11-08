@@ -54,7 +54,7 @@ w=G\ \text{on}\ \fib(S):=\textstyle\bigcup_{y\in S}\fib(y)
 \begin{proof}
 Since $\Fold_\beta[w]=\sum_j\beta^ju_j$ and $\beta$ is not bad, there are
 $v_0,\dots,v_{a-1}\in\RS_{i+1}$ with $u_j[w]=v_j$ on $S$. Put
-$G(X):=\sum_{j<a}X^jv_j(X^{a})$; then $\deg G<aL_{i+1}=L_i$ and $u_j[G]=v_j$ by
+$G(X):=\sum_{j<a}X^jv_j(\sigma_{i+1}(X))$; then $\deg G<aL_{i+1}=L_i$ and $u_j[G]=v_j$ by
 \cref{lem:components}(iii). For $y\in S$ the component vectors of $w$ and $G$ at $y$
 coincide, hence $w=G$ on $\fib(y)$ by \cref{lem:components}(ii). Finally
 $\Fold_\beta[G]=\sum_j\beta^jv_j\in\RS_{i+1}$ agrees with $V$ on $S$, and
@@ -123,7 +123,7 @@ $|\mathcal E(w)|>(a-1)n$. The values $\Delta(\Fold_\beta[w],C)$ lie in
 $\frac1n\Z$; let $\delta^\ast$ be the largest element of $\frac1n\Z$ below $\theta$. Then
 $\mathcal E(w)=\{\beta:\Delta(\Fold_\beta[w],C)\le\delta^\ast\}$ and $\delta^\ast<\theta$,
 so \cref{thm:bciks-ud} yields $S$ with $|S|\ge(1-\delta^\ast)n$ and $v_j\in C$ with
-$u_j[w]=v_j$ on $S$. As in the proof of \cref{lem:mca-fold}, $G:=\sum_jX^jv_j(X^a)$
+$u_j[w]=v_j$ on $S$. As in the proof of \cref{lem:mca-fold}, $G:=\sum_jX^jv_j(\sigma_{i+1}(X))$
 satisfies $w=G$ on $\fib(S)$, so $\Db(w,G)\le\delta^\ast<\theta$, a contradiction. Hence
 $|\mathcal E(w)|\le(a-1)n$.
 

@@ -1,0 +1,92 @@
+\chapter{Open Problems}
+\label{ch:open}
+
+Two questions remain open. The first is coding-theoretic: mutual correlated agreement
+below the Johnson radius, which governs the anchored, promise and equivocation thresholds.
+The second concerns efficiency: an opening cost linear in the number of rounds. The chapter
+first compares the symbolic protocol with its natural alternative, parallel scalar FRI,
+which motivates the second problem.
+
+%=====================================================================
+\section{Comparison with parallel scalar FRI}
+%=====================================================================
+
+The terminal polynomial $g$ has degree $\le d$, so it is also determined by the $d+1$
+values $g(c_j)=f(c_jr)$ at public distinct points $c_0,\dots,c_d\in\K^\times$, each of which
+is the output of a scalar FRI instance with challenges $c_jr_i$ on the common initial word
+$W_0$.
+
+\begin{remark}[Opening cost]\label{rem:parallel}
+With leaves grouped by fibre, shared query paths and $W_k$ omitted, the number of opened
+$\K$-elements per path (layers $1\le i<k$) is
+\[
+\text{symbolic: }\ a(k-1)\Bigl(1+\frac{(a-1)k}2\Bigr),\qquad
+\text{$d+1$ parallel scalar instances: }\ a(k-1)\bigl(1+(a-1)k\bigr),
+\]
+so the symbolic protocol opens a fraction
+$\frac{1+(a-1)k/2}{1+(a-1)k}\in(\frac12,\frac34]$ of the parallel data; for $a=2$, $k=20$:
+$418$ against $798$. In addition, the direct analysis of the parallel protocol bounds
+$\Pr[\Acc\wedge\exists j:\gt(c_j)\ne f_\star(c_jr)]$ by a union bound over $j$, which
+multiplies the query term by $d+1$; the coupling of \cref{lem:coupling} avoids this loss
+because the evaluation point is hidden from the prover.
+\end{remark}
+
+%=====================================================================
+\section{Mutual correlated agreement beyond the Johnson radius}
+%=====================================================================
+
+\begin{problem}\label{prob:mca-beyond}
+Let $\rho\in\{\frac12,\frac14,\frac18,\frac1{16}\}$, $a\ge2$ and $\alpha^\ast\in(\rho,\sqrt\rho)$.
+Prove $\eps_{\MCA}(\RS[\K,E,\ell],a,1-\alpha^\ast)\le\mathrm{poly}(n)/|\K|$ and
+$\ell_{\alpha^\ast}\le\mathrm{poly}(n)$ for $\K=\F_{p^3}$ and $E=D_{i+1}\subseteq\F_p$.
+By \cref{thm:anchored,thm:anchored-attack}, every such $\alpha^\ast$ is the exact query
+factor of anchored binding at that threshold; by \cref{prop:gap-mca},
+$\alpha^\ast=\delta_0+\rho$ and $\alpha^\ast=(\frac{1+\rho}2)^2$ close the gaps for promise
+binding and non-equivocation.
+\end{problem}
+
+\begin{lemma}[Subfield domains are interleavings]\label{lem:subfield-interleave}
+Let $E\subseteq\F_p$, $\K=\F_{p^e}$, and fix an $\F_p$-basis $\omega_1,\dots,\omega_e$ of
+$\K$. The map
+\[
+\RS[\F_p,E,\ell]^{e}\to\RS[\K,E,\ell],\qquad (P_1,\dots,P_e)\mapsto\sum_{b=1}^{e}\omega_bP_b,
+\]
+is an $\F_p$-linear bijection, and a word $w=\sum_b\omega_bw_b:E\to\K$ agrees with
+$\sum_b\omega_bP_b$ at $x\in E$ iff $w_b(x)=P_b(x)$ for all $b$.
+\end{lemma}
+
+\begin{proof}
+Every $P\in\K[X]_{<\ell}$ decomposes uniquely as $\sum_b\omega_bP_b$ with
+$P_b\in\F_p[X]_{<\ell}$, and for $x\in\F_p$, $P(x)=\sum_b\omega_bP_b(x)$ with
+$P_b(x)\in\F_p$; uniqueness of coordinates in the basis gives the agreement statement.
+\end{proof}
+
+By \cref{lem:subfield-interleave}, \cref{prob:mca-beyond} is a statement about
+\emph{$e$-fold interleaved} Reed--Solomon codes over the prime field $\F_p$, under the
+$\K$-linear generator $\beta\mapsto(1,\beta,\dots,\beta^{a-1})$, whose action mixes the
+$e$ coordinates. Two lines of recent work bear on it: deterministic MCA bounds a fixed
+number of integer steps beyond the Johnson radius on arbitrary evaluation
+sets~\cite{Jo26}, and hidden-derivative methods for list decoding and MCA up to capacity
+over prime fields~\cite{DKT26,Jer26}. Results over prime fields apply to the coordinate
+codes $\RS[\F_p,E,\ell]$; the missing step is their transfer to the interleaved code with
+$\K$-valued challenges. The up-to-capacity versions of the proximity-gap conjectures fail
+in general~\cite{BCHKS25}; the thresholds $\alpha^\ast$ above lie strictly above
+capacity, so these negative results do not apply directly.
+
+%=====================================================================
+\section{Opening cost}
+%=====================================================================
+
+\begin{problem}\label{prob:cost}
+Construct a variant of \cref{prot:sfri} with the binding guarantees of
+\cref{thm:unique-binding} and $O(ak)$ opened $\K$-elements per query path, instead of
+$\Theta(a^2k^2)$ (\cref{rem:cost}).
+\end{problem}
+
+The quadratic term comes from the $T$-degree $d_i=i(a-1)$ of layer $i$. Checking the
+identities at one random point (\cref{rem:single-point}) reduces the verifier's
+arithmetic but not the opened data, because the leaves must determine $W_i(x)$ as a
+polynomial. Any solution must keep the evaluation point hidden from the prover until the
+commitments are fixed (the coupling of \cref{lem:coupling}); revealing it in advance
+reduces the protocol to scalar FRI at that point, which binds a single value of $g$.
+

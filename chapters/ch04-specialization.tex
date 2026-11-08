@@ -182,6 +182,58 @@ most $\ell_\alpha d/(|\K|-1)$.
 \end{proof}
 
 %=====================================================================
+\section{Affine lines and polynomial curves}\label{sec:curves}
+%=====================================================================
+
+\begin{definition}[Curve challenges]\label{def:curve-challenges}
+Fix $e\ge1$ and public $z=(z_1,\dots,z_k)\in\K^k$. In \cref{prot:sfri} replace the
+challenge $r_{i+1}T$ by
+\[
+\varphi_{i+1}(T):=z_{i+1}+\sum_{t=1}^{e}r_{i+1,t}T^t,\qquad
+(r_{i+1,1},\dots,r_{i+1,e})\leftarrow\K^e\ \text{uniform},
+\]
+raise the degree caps to $d_i^{(e)}:=e\,d_i$, and require $\deg\gt\le ed$. The honest
+terminal polynomial is $g(T)=f(\varphi_1(T),\dots,\varphi_k(T))$. The case $e=1$, $z=0$ is
+\cref{prot:sfri}; the case $e=1$ certifies $f$ on the affine line
+$\{z+cr:c\in\K\}$.
+\end{definition}
+
+\begin{proposition}[Curve version]\label{prop:curves}
+\Cref{thm:symbolic-list,thm:identification} hold for the protocol of
+\cref{def:curve-challenges}, with $f_G(rT)$ replaced by $f_G(\varphi(T))$ and $d$ replaced
+by $ed$; so do all results of \cref{ch:corollaries}, and the attacks of
+\cref{ch:lower-bounds} apply verbatim with the same replacements. The point $z$ may be
+sampled by the verifier after $W_0$, provided it is independent of the $r_{i,t}$.
+\end{proposition}
+
+\begin{proof}
+We list the steps of \cref{ch:setting} and of this chapter that use the form of the
+challenge and check each; conditioning on $z$ does not affect any of them, since $z$ is
+independent of the $r_{i,t}$ and $W_0$ is fixed before the $r_{i,t}$ are sampled.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item \emph{Honest invariant.} \Cref{lem:fold-poly} holds for every $\beta\in\K[T]$, so
+folding with $\varphi_{i+1}(T)$ substitutes $Y_{i+1}=\varphi_{i+1}(T)$ in the proof of
+\cref{prop:honest}; the $T$-degree of layer $i$ is at most $e\,d_i$.
+\item \emph{Specialization.} The proof of \cref{lem:specialization} gives
+$\Fold_{\varphi(T)}[w](y)|_{T=c}=\Fold_{\varphi(c)}[w^{(c)}](y)$.
+\item \emph{Coupling.} Fix $c\in\K^\times$. Given $\beta_{i+1}$ uniform, the scalar prover
+samples $r_{i+1,2},\dots,r_{i+1,e}$ uniformly and sets
+$r_{i+1,1}:=c^{-1}\bigl(\beta_{i+1}-z_{i+1}-\sum_{t\ge2}r_{i+1,t}c^t\bigr)$. For fixed
+$(c,r_{i+1,2},\dots,r_{i+1,e})$ this is a bijection between $\beta_{i+1}$ and
+$r_{i+1,1}$, so the simulated vector $(r_{i+1,t})_t$ is uniform on $\K^e$ and independent
+of the history, and $\varphi_{i+1}(c)=\beta_{i+1}$. \Cref{lem:coupling} follows as before.
+\item \emph{Root count.} $\gt-f_G(\varphi(T))$ has degree at most $ed$, so
+$|Z(\tau)|\le\ell_\alpha ed$.
+\item \emph{Injectivity.} For $0\ne h\in\Pa(\K)$, if $h(\varphi(T))=0$ in $\K[T]$ then
+$h(\varphi(1))=0$, where $\varphi(1)=z+\sum_tr_{\cdot,t}$ is uniform on $\K^k$; this has
+probability at most $\deg h/|\K|\le d/|\K|$ by Schwartz--Zippel. This replaces the
+homogeneous-component argument in the proofs of \cref{thm:identification} and
+\cref{lem:perturbation}(iv).
+\end{enumerate}
+No other step depends on the challenge.
+\end{proof}
+
+%=====================================================================
 \section{Remarks on the protocol}
 %=====================================================================
 

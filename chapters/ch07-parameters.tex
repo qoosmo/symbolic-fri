@@ -5,7 +5,7 @@ This chapter instantiates the bounds of \cref{ch:corollaries,ch:lower-bounds} fo
 Goldilocks field. All numbers are produced by the Rust crate \texttt{tools/params} of the
 repository; the tables below are generated files and are reproduced by
 \begin{center}
-\texttt{cd tools/params \&\& cargo run --release -- ../../tables/params.tex}
+\texttt{cd tools/params \&\& cargo run --release -- ../../tables/params.tex ../../tables/fs.tex}
 \end{center}
 
 %=====================================================================
@@ -15,7 +15,7 @@ repository; the tables below are generated files and are reproduced by
 \begin{definition}[Goldilocks instantiation]\label{def:goldilocks}
 $q=p:=2^{64}-2^{32}+1$, $\F=\F_p$, $\K=\F_{p^3}$, so $|\K|=p^3\approx2^{192}$. Since
 $p-1=2^{32}\cdot3\cdot5\cdot17\cdot257\cdot65537$, every $N=2^t$ with $t\le32$ satisfies
-$N\mid p-1$, and \cref{def:domain} applies to every power-of-two arity sequence. We fix
+$N\mid p-1$, and the multiplicative tower of \cref{ex:multiplicative} applies to every power-of-two arity sequence. We fix
 $L=2^{20}$, $B=1/\rho\in\{2,4,8,16\}$, uniform arity $a\in\{2,4,16\}$ with $k=20/\log_2a$
 rounds, and target $\lambda=128$.
 \end{definition}
@@ -86,14 +86,19 @@ $N\le2^{24}$; with the bound of~\cite{BCIKS20}, quadratic in $n$, it fails for $
 
 \begin{remark}[Reading \cref{tab:johnson}]\label{rem:johnson-reading}
 \begin{enumerate}[label=\textup{(\roman*)}]
-\item $s_J$ applies to proximity, to session uniqueness, and to promise binding with
-$\delta_0\le\sqrt\rho+\eta-\rho$. It is independent of the arity up to the term
+\item $s_J$ applies to proximity, to session uniqueness, to anchored binding
+(\cref{thm:anchored}, whose additional term $\eps_{\mathrm{OOD}}(\ell_\alpha)\le2^{-160}$ here),
+and to promise binding with $\delta_0\le\sqrt\rho+\eta-\rho$. For anchored binding it is
+also necessary, by \cref{thm:anchored-attack}. It is independent of the arity up to the term
 $d/|\K|$.
 \item $s_E$ and $s_{E,\mathrm{att}}$ coincide for $\rho=\frac1{16}$, where
 $M=(\frac{17}{32})^2$: non-equivocation is then tight with $s=71$. For
 $\rho\in\{\frac12,\frac14,\frac18\}$ the gap between $s_{E,\mathrm{att}}$ and $s_E$ is the
 gap of \cref{prop:gap-mca}.
 \item Unique binding cannot use the Johnson columns: by \cref{thm:ub-tight} the values
-$s_A$ of \cref{tab:unique} are necessary for that notion.
+$s_A$ of \cref{tab:unique} are necessary for that notion. Anchored binding replaces it at
+the cost of one out-of-domain value in the commitment, and reduces $s$ from $189$ to $136$ at
+$\rho=\frac14$.
+\item Non-interactive versions are treated in \cref{ch:fs}.
 \end{enumerate}
 \end{remark}

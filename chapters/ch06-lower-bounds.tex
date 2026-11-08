@@ -15,7 +15,7 @@ Johnson radius.
 \begin{lemma}[The perturbation $H_Y$]\label{lem:perturbation}
 Let $Y\subseteq D_1$ with $|Y|\le L_1-1$, and put
 \[
-h_Y(Z):=\prod_{y\in Y}(Z-y)\in\F[Z],\qquad H_Y(X):=h_Y(X^{a_1})\in\F[X].
+h_Y(Z):=\prod_{y\in Y}(Z-y)\in\F[Z],\qquad H_Y(X):=h_Y(\sigma_1(X))\in\F[X].
 \]
 Then:
 \begin{enumerate}[label=\textup{(\roman*)}]
@@ -29,7 +29,7 @@ $\Pr_r\bigl[f_{H_Y}(rT)=0\bigr]\le d/|\K|$.
 \end{lemma}
 
 \begin{proof}
-(i) $\deg H_Y=a_1|Y|\le a_1(L_1-1)<L$. (ii) For $x\in\fib(y)$, $H_Y(x)=h_Y(x^{a_1})=h_Y(y)$,
+(i) $\deg H_Y=a_1|Y|\le a_1(L_1-1)<L$. (ii) For $x\in\fib(y)$, $H_Y(x)=h_Y(\sigma_1(x))=h_Y(y)$,
 which vanishes iff $y\in Y$. (iii) By \cref{lem:components}(iii) with $G_0=h_Y$ and
 $G_j=0$ for $j\ge1$, $u_0[H_Y]=h_Y$ and $u_j[H_Y]=0$ for $j\ge1$. (iv) $f_{H_Y}\ne0$
 because $\kappa$ is injective; the probability bound is the Schwartz--Zippel argument of
@@ -173,6 +173,40 @@ inequality, the balanced attack is never worse up to $O(1/n_1)$.
 \end{remark}
 
 %=====================================================================
+\section{Anchored binding}
+%=====================================================================
+
+\begin{theorem}[Anchored attack]\label{thm:anchored-attack}
+Let $\alpha\in(\rho,\frac{1+\rho}2]$. There is an efficient prover for \cref{prot:anchored}
+that wins a session in the sense of \cref{def:anchored-ref} with probability at least
+\[
+\Bigl(1-\frac{(\ell_\alpha+1)(L-1)}{|\K|}\Bigr)\,(\alpha^-)^{s}.
+\]
+\end{theorem}
+
+\begin{proof}
+Take $Y$, $H_Y$ as in \cref{def:attack-ub}, $G_1:=F$ and $G_2:=F-H_Y$. Choose
+$A\subseteq D_1\setminus Y$ with $|A|=\alpha^-n_1-(L_1-1)$; this is nonnegative because
+$\alpha>\rho$ and $\alpha^-$ is the largest grid point below $\alpha$, and it is at most
+$n_1-L_1+1$. Set $W_0:=G_2$ on $\fib(A)$ and $W_0:=G_1$ elsewhere. Then
+$\agr(W_0,G_2)=(|A|+L_1-1)/n_1=\alpha^-<\alpha$, so $G_2\notin\Lambda_\alpha(W_0)$, and
+$\agr(W_0,G_1)\ge1-\alpha^-+\rho-\frac1{n_1}\ge\alpha$ for $\alpha\le\frac{1+\rho}2$, so
+$G_1\in\Lambda_\alpha(W_0)$.
+
+On receiving $z$ the prover answers $y:=G_2(z)$ and runs the honest session for $G_2$.
+As in \cref{thm:ub-tight}, the accepting fibres of layer $0$ are exactly $A\cup Y$, so
+$\pi^{\mathrm{sym}}_0=\alpha^-$ for every choice of challenges, and $\gt(0)=G_2(z)=y$ passes.
+The anchored reference is $\bot$ unless some $G\in\Lambda_\alpha(W_0)$ has $G(z)=G_2(z)$;
+every such $G$ differs from $G_2$, so for a fixed list this has probability at most
+$\ell_\alpha(L-1)/|\K|$ over $z$. Hence $G_{z,y}=\bot$ and the prover wins whenever it is
+accepted, outside an event of probability at most $(\ell_\alpha+1)(L-1)/|\K|$.
+\end{proof}
+
+\Cref{thm:anchored,thm:anchored-attack} show that the query factor of anchored binding at
+threshold $\alpha$ is exactly $\alpha^-$; the threshold itself can be lowered as far as
+mutual correlated agreement holds.
+
+%=====================================================================
 \section{Proved versus attacked factors}
 %=====================================================================
 
@@ -187,6 +221,7 @@ Notion & Proved factor & Attacked factor\\
 \hline
 Unique binding & $\frac{1+\rho}2$ & $\frac{1+\rho}2$\\
 Promise binding & $\max\bigl(\sqrt\rho+\eta,\ \delta_0+\rho\bigr)$ & $\delta_0+\rho$\\
+Anchored binding (threshold $\alpha$) & $\alpha$ & $\alpha$\\
 Non-equivocation (two sessions) & $\max\bigl(\sqrt\rho+\eta,\ (\frac{1+\rho}2)^2\bigr)$ & $(\frac{1+\rho}2)^2$\\
 \hline
 \end{tabular}
@@ -194,6 +229,8 @@ Non-equivocation (two sessions) & $\max\bigl(\sqrt\rho+\eta,\ (\frac{1+\rho}2)^2
 
 \begin{itemize}
 \item Unique binding is tight for every $\rho$ and every arity sequence.
+\item Anchored binding is tight at every threshold $\alpha$ at which MCA holds; with
+\cref{thm:mca-johnson} the threshold is $\sqrt\rho+\eta$.
 \item Promise binding is tight whenever $\delta_0+\rho\ge\sqrt\rho+\eta$.
 \item Non-equivocation is tight whenever $(\frac{1+\rho}2)^2\ge\sqrt\rho+\eta$; among
 $\rho\in\{\frac12,\frac14,\frac18,\frac1{16}\}$ this is the case only for $\rho=\frac1{16}$

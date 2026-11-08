@@ -1,0 +1,186 @@
+\chapter{Non-Interactive Compilation}
+\label{ch:fs}
+
+The protocols of the previous chapters are public-coin interactive oracle proofs. Their
+non-interactive versions replace the verifier by a hash function and the oracles by
+Merkle commitments. This chapter proves state-restoration bounds for every binding notion
+of \cref{ch:corollaries}, from which the security of the compiled argument in the random
+oracle model follows by the transformation of Ben-Sasson, Chiesa and Spooner~\cite{BCS16}.
+The proofs use one structural property of the analysis of \cref{ch:path,ch:specialization}:
+every bad event is attached to a single challenge and depends only on data fixed before
+that challenge, while the evaluation point $c$ of the coupling is never seen by the
+prover.
+
+%=====================================================================
+\section{The state-restoration game}
+%=====================================================================
+
+\begin{definition}[State-restoration game]\label{def:sr}
+Fix one of the protocols \cref{prot:sfri,prot:anchored} and one of the winning conditions
+of \cref{ch:corollaries} (unique binding, list binding at threshold $\alpha$, or anchored
+binding at threshold $\alpha$). A \emph{state-restoration prover} $\mathsf P^\ast$ has
+access to a \emph{challenge oracle} that maps every \emph{prefix}, i.e.\ every partial
+transcript ending with a prover message, to a challenge for the next round, sampled
+uniformly from the appropriate set on the first query and answered consistently
+afterwards:
+\begin{itemize}
+\item a prefix ending with $W_i$ ($0\le i<k$) receives $r_{i+1}\in\K$;
+\item for \cref{prot:anchored}, the prefix $W_0$ also receives $z\in\K$;
+\item a complete commit transcript $\tau$ receives $s$ independent uniform starting points
+$x_0^{(1)},\dots,x_0^{(s)}\in D_0$.
+\end{itemize}
+$\mathsf P^\ast$ makes at most $Q$ oracle queries and outputs a complete transcript whose
+challenges are the oracle answers on its prefixes; the queries needed to verify the output
+are counted in $Q$. It wins if the transcript is accepting and the winning condition holds.
+The maximal winning probability is denoted $\eps_{\mathrm{SR}}(Q)$.
+\end{definition}
+
+The interactive game is the case in which the prover queries each prefix of a single
+transcript once, in order.
+
+%=====================================================================
+\section{Per-query bad events}
+%=====================================================================
+
+Fix $\alpha\in[\rho,1]$, $\delta:=1-\alpha$, and an analysis point $c\in\K^\times$, uniform
+and independent of the oracle and of $\mathsf P^\ast$. For a prefix $\tau'$ let
+$\Lambda(\tau')$ be the list $\Lambda_\alpha(W_0)$ of the initial word of $\tau'$.
+
+\begin{definition}[Bad answers]\label{def:bad-answer}
+An oracle answer is \emph{bad} for its prefix in the following cases.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item \emph{MCA.} The prefix ends with $W_i$ and the answer $r_{i+1}$ satisfies
+$\varphi_{i+1}(c)\in\Bad\bigl(u[W_i^{(c)}],\delta\bigr)$, where $\varphi_{i+1}(T)$ is the
+challenge curve of the protocol ($r_{i+1}T$ or $\zeta_{i+1}+r_{i+1}T$).
+\item \emph{Collapse.} The prefix ends with $W_i$ and, for some $G\ne G'$ in
+$\Lambda(\tau')$, the polynomial $h:=f_G-f_{G'}\ne0$ satisfies:
+$h(\varphi_1(1),\dots,\varphi_i(1),Y_{i+1},\dots,Y_k)\ne0$ but
+$h(\varphi_1(1),\dots,\varphi_{i+1}(1),Y_{i+2},\dots,Y_k)=0$, as polynomials in the remaining
+variables. \textup{(}For \cref{prot:sfri}, $\varphi_j(1)=r_j$.\textup{)}
+\item \emph{Out of domain.} The prefix is $W_0$, the answer is $z$, and two distinct
+elements of $\Lambda(W_0)$ take the same value at $z$.
+\end{enumerate}
+\end{definition}
+
+\begin{lemma}[Per-query probability]\label{lem:per-query}
+Each oracle query of a commit round or of the out-of-domain round returns a bad answer with
+probability at most
+\[
+\eps_{\mathrm{cr}}:=\max_{i<k}\eps_{\MCA}(\RS_{i+1},a_{i+1},\delta)
++\binom{\ell_\alpha}2\frac{\max_ia_i-1}{|\K|}+\eps_{\mathrm{OOD}}(\ell_\alpha),
+\]
+where the last term is present only for \cref{prot:anchored}.
+\end{lemma}
+
+\begin{proof}
+The prefix, hence $W_i^{(c)}$ and $\Lambda(\tau')$, is fixed when the query is made, and the
+answer is uniform and independent of it and of $c$. (i) $\varphi_{i+1}(c)$ is uniform on $\K$
+because $c\ne0$, so the probability is at most $\eps_{\MCA}(\RS_{i+1},a_{i+1},\delta)$.
+(ii) For each pair, the polynomial before substitution is nonzero and has degree at most
+$a_{i+1}-1$ in $Y_{i+1}$; it becomes zero only if $\varphi_{i+1}(1)$ is a common root of its
+nonzero coefficients with respect to $Y_{i+1}$, which has probability at most
+$(a_{i+1}-1)/|\K|$ since $\varphi_{i+1}(1)$ is uniform. Union over pairs. (iii) is
+\cref{lem:ood}.
+\end{proof}
+
+\begin{definition}[Exceptional evaluation points]\label{def:zprime}
+For a complete commit transcript $\tau$ with challenge curves $\varphi$, let
+$Z'(\tau):=\{c'\in\K^\times:\exists G\in\Lambda_\alpha(W_0),\ \gt(c')=f_G(\varphi(c'))\}$ if
+$\gt\notin\{f_G(\varphi(T)):G\in\Lambda_\alpha(W_0)\}$, and $Z'(\tau):=\emptyset$ otherwise.
+Then $|Z'(\tau)|\le\ell_\alpha\,d$, as in the proof of \cref{thm:symbolic-list}.
+\end{definition}
+
+\begin{lemma}[No bad answer implies a small passing ratio]\label{lem:no-bad}
+Let $\tau$ be a complete commit transcript, none of whose challenges is a bad answer for its
+prefix, such that $c\notin Z'(\tau)$ and the winning condition holds. Then
+$\pi^{\mathrm{sym}}_0(\tau)\le\alpha^-$.
+\end{lemma}
+
+\begin{proof}
+Absence of MCA-bad answers is the event $\neg\mathsf{Bad}^{(c)}$ for $\tau$.
+\emph{Case 1:} $\gt\notin\{f_G(\varphi(T)):G\in\Lambda_\alpha(W_0)\}$. If
+$\pi^{\mathrm{sym}}_0\ge\alpha$, the argument of \cref{thm:symbolic-list} (via
+\cref{lem:spec-passing,lem:master}) gives $c\in Z'(\tau)$, a contradiction; so
+$\pi^{\mathrm{sym}}_0<\alpha$, i.e.\ $\le\alpha^-$.
+\emph{Case 2:} $\gt=f_G(\varphi(T))$ for some $G\in\Lambda_\alpha(W_0)$. Absence of collapse
+answers gives $h(\varphi_1(1),\dots,\varphi_k(1))\ne0$ for every pair, so
+$G\mapsto f_G(\varphi(T))$ is injective on the list (the argument of
+\cref{prop:curves}(v)) and $G$ is unique. Then no list-binding or unique-binding
+condition holds (for unique binding the list is contained in $\{F_\star\}$, so $G=F_\star$).
+For anchored binding, $G(z)=f_G(\zeta)=\gt(0)=y$, and absence of out-of-domain-bad answers
+makes $G$ the only list element with value $y$ at $z$, i.e.\ $G=G_{z,y}$; so the
+anchored condition does not hold either. Hence Case 2 contradicts the winning condition.
+\end{proof}
+
+%=====================================================================
+\section{The state-restoration bound}
+%=====================================================================
+
+\begin{theorem}[State-restoration binding]\label{thm:sr-binding}
+For each winning condition of \cref{def:sr} at threshold $\alpha$,
+\[
+\eps_{\mathrm{SR}}(Q)\le Q\bigl(\eps_{\mathrm{cr}}+(\alpha^-)^s\bigr)+\frac{\ell_\alpha\,d}{|\K|-1}.
+\]
+For unique binding ($\alpha$ the smallest grid point above $\frac{1+\rho}2$),
+\[
+\eps_{\mathrm{SR}}(Q)\le Q\Bigl(\frac{(a_1-1)n_1}{|\K|}+\Bigl(\frac{1+\rho}2\Bigr)^s\Bigr)+\frac{d}{|\K|-1}.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $\tau_{\mathrm{out}}$ be the commit transcript of the output and suppose the prover
+wins. One of the following holds.
+\begin{enumerate}[label=\textup{(\alph*)}]
+\item Some challenge of $\tau_{\mathrm{out}}$ is a bad answer for its prefix. Every such
+challenge is the answer to one of the $Q$ queries, so by \cref{lem:per-query} this has
+probability at most $Q\,\eps_{\mathrm{cr}}$.
+\item $c\in Z'(\tau_{\mathrm{out}})$. The whole execution of $\mathsf P^\ast$ and the oracle
+is independent of $c$, and $|Z'(\tau_{\mathrm{out}})|\le\ell_\alpha d$; the probability is
+at most $\ell_\alpha d/(|\K|-1)$.
+\item Otherwise $\pi^{\mathrm{sym}}_0(\tau_{\mathrm{out}})\le\alpha^-$ by \cref{lem:no-bad},
+and the starting points returned on $\tau_{\mathrm{out}}$ all lie in
+$P_0(\tau_{\mathrm{out}})$. For each queried commit transcript $\tau$ with
+$\pi^{\mathrm{sym}}_0(\tau)\le\alpha^-$ this happens with probability at most
+$(\alpha^-)^s$, since the answer is fresh; a union bound over the at most $Q$ such queries
+gives $Q(\alpha^-)^s$.
+\end{enumerate}
+For unique binding, $\ell_\alpha\le1$, the collapse and out-of-domain terms vanish, and
+$\max_i\eps_{\MCA}(\RS_{i+1},a_{i+1},\delta)\le\max_i(a_{i+1}-1)n_{i+1}/|\K|=(a_1-1)n_1/|\K|$ by
+\cref{prop:mca-ud}, since $(a_{i+1}-1)n_{i+1}=n_i-n_{i+1}$ is decreasing in $i$.
+\end{proof}
+
+\begin{theorem}[Compiled argument {\cite{BCS16}}]\label{thm:bcs}
+Let the oracles be committed with Merkle trees over a random oracle with output length
+$\lambda_H$, and derive all challenges by hashing the prefix. For a prover making at most
+$Q$ random-oracle queries, the probability of winning any of the binding games of
+\cref{ch:corollaries} against the compiled argument is at most
+$\eps_{\mathrm{SR}}(Q)+O(Q^2/2^{\lambda_H})$.
+\end{theorem}
+
+The transformation theorem of~\cite{BCS16} is stated for soundness; its proof extracts
+the committed oracles from the Merkle roots and reduces the compiled adversary to a
+state-restoration prover, and applies unchanged to any winning condition that is a
+function of the oracle-level transcript.
+
+%=====================================================================
+\section{Parameters}
+%=====================================================================
+
+\input{tables/fs}
+
+\begin{remark}[Reading \cref{tab:fs}]\label{rem:fs-reading}
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item The commit rounds contribute $Q\,n_1/|\K|$, which does not decrease with $s$. Over
+$\K=\F_{p^3}$ with $Q=2^{64}$ this is about $2^{-107}$ at $\rho=\frac14$, so $128$-bit
+non-interactive unique binding is unreachable for every $s$; it is reachable with
+$Q\le2^{40}$, or with $\K=\F_{p^4}$.
+\item Where reachable, the query count is
+$s=\lceil(128+\log_2Q)/\log_2\frac2{1+\rho}\rceil$ up to the small correction of the other
+terms; for $\F_{p^4}$ and $Q=2^{64}$ this gives $463,284,232,211$.
+\item Proof-of-work on the query-round prefix with $w$ bits multiplies the query-round term
+by $2^{-w}$ and leaves the commit term unchanged.
+\item The anchored and list-binding variants have the same structure with $\alpha^-$ in
+place of $\frac{1+\rho}2$; their commit term contains $\eps^J_{\MCA}$ and is subject to the
+same field-size condition.
+\end{enumerate}
+\end{remark}

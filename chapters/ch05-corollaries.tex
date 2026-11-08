@@ -2,8 +2,8 @@
 \label{ch:corollaries}
 
 This chapter derives, from \cref{thm:symbolic-list,thm:identification}, the bounds for
-five security notions of the symbolic protocol: unique binding, proximity, promise
-binding, session uniqueness and non-equivocation. Each notion is stated as a game on
+six security notions of the symbolic protocol: unique binding, proximity, promise
+binding, session uniqueness, anchored binding and non-equivocation. Each notion is stated as a game on
 the symbolic prover of \cref{def:symbolic-game}. Throughout,
 \[
 \theta=\tfrac{1-\rho}2,\qquad
@@ -130,6 +130,96 @@ $\pi^{\mathrm{sym}}_0\ge\alpha$ and $G(\tau)=\bot$, the event $\mathsf E$ of
 \end{proof}
 
 %=====================================================================
+\section{Anchored binding up to the Johnson radius}
+%=====================================================================
+
+Unique binding cannot go below the factor $\frac{1+\rho}2$ (\cref{thm:ub-tight}): beyond the
+unique-decoding radius the committed word may be close to several polynomials, and the
+prover may open any of them. An out-of-domain value fixed at commitment time selects one
+list element. In the symbolic protocol this costs no extra query: the folding line is
+chosen to pass through the Kronecker point of the out-of-domain sample, so the value is
+read off as $\gt(0)$.
+
+\begin{definition}[Kronecker point]\label{def:kronecker-point}
+For $z\in\K$ let $\zeta(z):=\bigl(\Sigma_0(z),\Sigma_1(z),\dots,\Sigma_{k-1}(z)\bigr)\in\K^k$.
+By \cref{def:kronecker}, $\kappa(f)(z)=f(\zeta(z))$ for every $f\in\Pa(\K)$, i.e.\
+$G(z)=f_G(\zeta(z))$ for every $G\in\K[X]_{<L}$.
+\end{definition}
+
+\begin{protocol}[Anchored symbolic FRI]\label{prot:anchored}
+\emph{Commitment.} $\mathsf P$ sends $W_0:D_0\to\F$; $\mathsf V$ samples $z\leftarrow\K$
+uniformly; $\mathsf P$ sends $y\in\K$ (honestly $y=F(z)$ for $F=\kappa(f)$). The commitment is
+$(W_0,z,y)$; put $\zeta:=\zeta(z)$.
+
+\emph{Session.} Run \cref{prot:sfri} on $W_0$ with the challenges $r_{i}T$ replaced by
+$\zeta_i+r_iT$ (\cref{def:curve-challenges} with $e=1$ and base point $\zeta$), and in
+addition let $\mathsf V$ reject unless $\gt(0)=y$. Any number of sessions may be run on
+the same commitment, each with fresh challenges and queries.
+\end{protocol}
+
+For an honest prover, \cref{prop:honest} with the curve challenges gives
+$\gt=f(\zeta+rT)$, hence $\gt(0)=f(\zeta)=F(z)=y$: the protocol is complete.
+
+\begin{lemma}[Out-of-domain separation]\label{lem:ood}
+Let $W_0$ be fixed and $z\leftarrow\K$ uniform. The probability that two distinct elements of
+$\Lambda_\alpha(W_0)$ take the same value at $z$ is at most
+$\eps_{\mathrm{OOD}}(\ell_\alpha):=\binom{\ell_\alpha}2\frac{L-1}{|\K|}$.
+\end{lemma}
+
+\begin{proof}
+For $G\ne G'$ in the list, $G-G'$ is nonzero of degree $<L$; union bound over pairs.
+\end{proof}
+
+\begin{definition}[Anchored reference]\label{def:anchored-ref}
+For a commitment $(W_0,z,y)$ let $G_{z,y}$ be the unique $G\in\Lambda_\alpha(W_0)$ with
+$G(z)=y$ if exactly one exists, and $G_{z,y}:=\bot$ otherwise. The prover wins a session if
+\[
+\Acc\ \wedge\ \bigl(G_{z,y}=\bot\ \vee\ \gt\ne f_{G_{z,y}}(\zeta+rT)\bigr).
+\]
+\end{definition}
+
+\begin{theorem}[Anchored binding]\label{thm:anchored}
+Let $\alpha\in[\rho,1]$ and $\delta:=1-\alpha$. For every prover and every session,
+\[
+\Pr[\text{the prover wins}]\le\eps_{\MCA}(\delta)+\eps_{\mathrm{SZ}}(\ell_\alpha)
++\eps_{\mathrm{OOD}}(\ell_\alpha)+(\alpha^-)^s .
+\]
+\end{theorem}
+
+\begin{proof}
+Condition on $z$; by \cref{prop:curves} (with base point $\zeta$, which is independent of
+the session challenges), \cref{thm:session} applies to the session: except with
+probability $\eps_{\MCA}(\delta)+\eps_{\mathrm{SZ}}(\ell_\alpha)+(\alpha^-)^s$, acceptance
+implies $G(\tau)\ne\bot$, $G(\tau)\in\Lambda_\alpha(W_0)$ and $\gt=f_{G(\tau)}(\zeta+rT)$.
+Then $G(\tau)(z)=f_{G(\tau)}(\zeta)=\gt(0)=y$. Outside the event of \cref{lem:ood},
+$G(\tau)$ is therefore the unique list element with value $y$ at $z$, i.e.\
+$G(\tau)=G_{z,y}$, and the prover does not win.
+\end{proof}
+
+\begin{corollary}[Anchored non-equivocation]\label{cor:anchored-eq}
+For $m$ sessions on one commitment $(W_0,z,y)$, the probability that some session accepts
+with $\gt$ different from $f_{G_{z,y}}(\zeta+rT)$, or with $G_{z,y}=\bot$, is at most
+$\eps_{\mathrm{OOD}}(\ell_\alpha)+m\bigl(\eps_{\MCA}(\delta)+\eps_{\mathrm{SZ}}(\ell_\alpha)+(\alpha^-)^s\bigr)$.
+In particular all accepted sessions open the same polynomial $G_{z,y}$, which is
+determined by the commitment.
+\end{corollary}
+
+\begin{proof}
+\Cref{lem:ood} is applied once; the remaining terms of \cref{thm:anchored} are applied to
+each session.
+\end{proof}
+
+\begin{remark}[Anchored versus unique binding]\label{rem:anchored-vs-unique}
+With $\alpha=\sqrt\rho+\eta$ and \cref{thm:mca-johnson}, \cref{thm:anchored} has query
+factor $\sqrt\rho+\eta$ instead of $\frac{1+\rho}2$. The reference $G_{z,y}$ is fixed by the
+commitment but chosen by the prover through $y$ among the list elements; in the
+unique-decoding regime ($\alpha>\frac{1+\rho}2$) the list has at most one element and
+$G_{z,y}\in\{F_\star,\bot\}$. The attack of \cref{thm:ub-tight} does not apply: its two
+codewords $F$ and $F-H_Y$ differ at $z$ except with probability $\deg H_Y/|\K|$, so the check
+$\gt(0)=y$ separates them.
+\end{remark}
+
+%=====================================================================
 \section{Non-equivocation}
 %=====================================================================
 
@@ -217,6 +307,7 @@ Unique binding (\ref{thm:unique-binding}) & $\frac{1+\rho}2$ & MCA, unique decod
 Proximity (\ref{thm:proximity}) & $\sqrt\rho+\eta$ & MCA up to Johnson\\
 Promise binding (\ref{thm:promise}) & $\max(\sqrt\rho+\eta,\ \delta_0+\rho)$ & MCA up to Johnson\\
 Session uniqueness (\ref{thm:session}) & $\sqrt\rho+\eta$ & MCA up to Johnson\\
+Anchored binding (\ref{thm:anchored}) & $\sqrt\rho+\eta$ & MCA up to Johnson\\
 Non-equivocation (\ref{thm:equivocation}) & $\max(\sqrt\rho+\eta,\ (\frac{1+\rho}2)^2)$ & MCA up to Johnson\\
 \hline
 \end{tabular}
