@@ -1,0 +1,221 @@
+\chapter{The Master Path Lemma}
+\label{ch:path}
+
+This chapter analyses the \emph{scalar} folding protocol against an arbitrary
+adaptive prover. Its main result, \cref{lem:master}, shows that if a single query path
+accepts with probability at least $\alpha$ and no MCA-bad challenge occurred, then the
+terminal value is the full fold of a codeword agreeing with the initial word on every
+accepting fibre. No decoding is performed at intermediate layers, and no independence
+between layers along a query path is assumed: the analysis works with the exact set of
+accepting starting points. The symbolic protocol is reduced to this scalar statement in the next chapter.
+
+%=====================================================================
+\section{The scalar folding game}
+%=====================================================================
+
+\begin{definition}[Scalar folding game]\label{def:scalar-game}
+A \emph{scalar prover} $\mathsf P^\ast$ is an arbitrary (computationally unbounded,
+possibly randomized) strategy. The game runs as follows, with the parameters of
+\cref{def:domain}.
+\begin{enumerate}[label=\textup{S\arabic*.}]
+\item $\mathsf P^\ast$ outputs $W_0:D_0\to\K$.
+\item For $i=0,\dots,k-1$: $\beta_{i+1}\leftarrow\K$ is sampled uniformly and independently
+of everything so far and given to $\mathsf P^\ast$, who outputs $W_{i+1}:D_{i+1}\to\K$.
+\item $\mathsf P^\ast$ outputs $g\in\K$.
+\item The verifier runs $s$ independent query paths: $x_0\leftarrow D_0$ uniform,
+$x_{i+1}:=x_i^{a_{i+1}}$, and checks
+$W_{i+1}(x_{i+1})=\Fold_{\beta_{i+1}}[W_i](x_{i+1})$ for $0\le i<k$ and $W_k(x_k)=g$.
+\end{enumerate}
+The tuple $\tau:=(W_0,\beta_1,W_1,\dots,\beta_k,W_k,g)$ is the \emph{commit transcript};
+$\Acc$ is the event that all checks of all $s$ paths pass. We write
+$\beta:=(\beta_1,\dots,\beta_k)$.
+\end{definition}
+
+\begin{remark}[Terminal variants]\label{rem:terminal-variants}
+If the oracle $W_k$ is omitted and the last check is
+$\Fold_{\beta_k}[W_{k-1}](x_k)=g$, the game is the special case $W_k:\equiv g$. If the
+verifier instead reads all of $W_k$ and requires $W_k\equiv g$, the accepting set only
+shrinks. Every statement below therefore holds for all three variants, with the same
+bounds.
+\end{remark}
+
+%=====================================================================
+\section{Passing sets}
+%=====================================================================
+
+\begin{definition}[Passing sets]\label{def:passing}
+For a commit transcript $\tau$ define, by descending induction,
+\begin{align*}
+P_k&:=\{y\in D_k:\ W_k(y)=g\},\\
+Q_{i+1}&:=\{y\in P_{i+1}:\ W_{i+1}(y)=\Fold_{\beta_{i+1}}[W_i](y)\}\qquad(0\le i<k),\\
+P_i&:=\{x\in D_i:\ x^{a_{i+1}}\in Q_{i+1}\}\qquad(0\le i<k),
+\end{align*}
+and $\pi_i:=|P_i|/n_i$.
+\end{definition}
+
+\begin{lemma}[Basic properties]\label{lem:passing}
+For every commit transcript and $0\le i<k$:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $P_i=\fib(Q_{i+1})$ is a union of fibres, and $\pi_i=|Q_{i+1}|/n_{i+1}\le\pi_{i+1}$;
+\item a query path with starting point $x_0$ passes all checks iff $x_0\in P_0$;
+\item $\Pr[\Acc\mid\tau]=\pi_0^{\,s}$;
+\item if the $s$ starting points are drawn without replacement, $\Pr[\Acc\mid\tau]\le\pi_0^{\,s}$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(i) $P_i=\sigma_{i+1}^{-1}(Q_{i+1})$, each fibre has $a_{i+1}$ elements, and
+$n_i=a_{i+1}n_{i+1}$ (\cref{lem:fibres}); $Q_{i+1}\subseteq P_{i+1}$.
+(ii) By descending induction on $i$, $x_i\in P_i$ iff the checks at layers $i,\dots,k$ of
+the path through $x_i$ pass: for $i=k$ this is the terminal check, and $x_i\in P_i$ iff
+$x_{i+1}\in Q_{i+1}$ iff ($x_{i+1}\in P_{i+1}$ and the check at layer $i$ passes).
+(iii) Given $\tau$, the starting points are independent and uniform on $D_0$.
+(iv) The probability is
+$\binom{|P_0|}{s}/\binom{n_0}{s}=\prod_{t<s}\frac{|P_0|-t}{n_0-t}\le\pi_0^{\,s}$.
+\end{proof}
+
+%=====================================================================
+\section{Bad challenges}
+%=====================================================================
+
+\begin{definition}[Bad event]\label{def:bad-event}
+For $\delta\in[0,1)$ and $0\le i<k$ let $\mathsf{Bad}_i(\delta)$ be the event
+$\beta_{i+1}\in\Bad\bigl(u[W_i],\delta\bigr)$, where $u[W_i]=(u_j[W_i])_{j<a_{i+1}}$ is the
+component tuple of \cref{def:components} and $\Bad$ is taken with respect to $\RS_{i+1}$
+(\cref{def:mca}). Put $\mathsf{Bad}(\delta):=\bigcup_{i<k}\mathsf{Bad}_i(\delta)$ and
+\[
+\eps_{\MCA}(\delta):=\sum_{i=0}^{k-1}\eps_{\MCA}\bigl(\RS_{i+1},a_{i+1},\delta\bigr).
+\]
+\end{definition}
+
+\begin{lemma}\label{lem:bad-prob}
+For every scalar prover, $\Pr[\mathsf{Bad}(\delta)]\le\eps_{\MCA}(\delta)$.
+\end{lemma}
+
+\begin{proof}
+Fix $i$ and condition on the prover's coins and on $(W_0,\beta_1,\dots,\beta_i,W_i)$.
+Then $\Bad(u[W_i],\delta)$ is a fixed set of size at most
+$\eps_{\MCA}(\RS_{i+1},a_{i+1},\delta)|\K|$, and $\beta_{i+1}$ is uniform on $\K$ and
+independent of the conditioning. Hence
+$\Pr[\mathsf{Bad}_i(\delta)]\le\eps_{\MCA}(\RS_{i+1},a_{i+1},\delta)$; a union bound over
+$i$ concludes.
+\end{proof}
+
+%=====================================================================
+\section{The master path lemma}
+%=====================================================================
+
+\begin{lemma}[Master path lemma]\label{lem:master}
+Let $\alpha\in[\rho,1]$ and $\delta:=1-\alpha$. Let $\tau$ be a commit transcript such
+that $\mathsf{Bad}(\delta)$ does not occur and $\pi_0\ge\alpha$. Then there exists
+$V_0\in\K[X]_{<L}$ such that
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $\widehat V_0(\beta)=g$, i.e.\ $f_{V_0}(\beta_1,\dots,\beta_k)=g$;
+\item $W_0=V_0$ on $P_0$.
+\end{enumerate}
+Consequently $\pi_0\le\agr(W_0,V_0)$ and $V_0\in\Lambda_\alpha(W_0)$.
+\end{lemma}
+
+\begin{proof}
+By \cref{lem:passing}(i), $\pi_i\ge\pi_0\ge\alpha$ for every $i$. We prove by descending
+induction on $i\in\{k,k-1,\dots,0\}$:
+
+\smallskip\noindent\emph{Claim$(i)$.} There is $V_i\in\K[X]_{<L_i}$ with
+$W_i=V_i$ on $P_i$ and
+$\Fold_{\beta_k}\circ\cdots\circ\Fold_{\beta_{i+1}}[V_i]=g$.
+
+\smallskip\noindent\emph{Base $i=k$.} $V_k:=g$, a constant, so $\deg V_k<1=L_k$;
+$W_k=g$ on $P_k$ by definition, and the empty composition of folds gives $g$.
+
+\smallskip\noindent\emph{Step $i+1\to i$.} Let $V_{i+1}$ be given by Claim$(i+1)$ and
+$S:=Q_{i+1}$. For $y\in S$, $\Fold_{\beta_{i+1}}[W_i](y)=W_{i+1}(y)=V_{i+1}(y)$, the
+second equality because $S\subseteq P_{i+1}$. Moreover
+$|S|=\pi_in_{i+1}\ge\alpha n_{i+1}=(1-\delta)n_{i+1}$ and $\delta\le1-\rho$. Since
+$\mathsf{Bad}_i(\delta)$ does not occur, \cref{lem:mca-fold} applied to $w=W_i$,
+$V=V_{i+1}$ gives $G\in\RS_i$ with $W_i=G$ on $\fib(S)=P_i$ and
+$\Fold_{\beta_{i+1}}[G]=V_{i+1}$. Put $V_i:=G$; then
+$\Fold_{\beta_k}\circ\cdots\circ\Fold_{\beta_{i+1}}[V_i]
+=\Fold_{\beta_k}\circ\cdots\circ\Fold_{\beta_{i+2}}[V_{i+1}]=g$.
+
+\smallskip
+Claim$(0)$ gives (ii) and, by \cref{def:full-fold}, (i); the identity $\widehat V_0(\beta)=f_{V_0}(\beta)$ is
+\cref{lem:full-fold}.
+Finally $P_0=\fib(Q_1)$ and $W_0=V_0$ on every fibre over $Q_1$, so
+$\agr(W_0,V_0)\ge|Q_1|/n_1=\pi_0\ge\alpha$.
+\end{proof}
+
+\begin{remark}\label{rem:master-structure}
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item The codewords $V_i$ are not decoded from $W_i$; they are produced by MCA from
+the agreement set $Q_{i+1}$ of the next layer. In particular the lemma holds verbatim
+beyond the unique-decoding radius, wherever MCA holds.
+\item The lemma uses only $\pi_0\ge\alpha$; the per-layer quantities $\pi_i$ are
+controlled by monotonicity. Dependence between the checks of one path at different
+layers is therefore irrelevant.
+\item The prover's strategy enters only through $\tau$; the lemma is a statement about
+every transcript outside $\mathsf{Bad}(\delta)$.
+\end{enumerate}
+\end{remark}
+
+%=====================================================================
+\section{Scalar binding theorems}
+%=====================================================================
+
+\begin{theorem}[Scalar list binding]\label{thm:scalar-list}
+Let $\alpha\in[\rho,1]$ and $\delta:=1-\alpha$. For every scalar prover,
+\[
+\Pr\Bigl[\Acc\ \wedge\ g\notin\bigl\{\widehat G(\beta):G\in\Lambda_\alpha(W_0)\bigr\}\Bigr]
+\le\eps_{\MCA}(\delta)+\alpha^{s}.
+\]
+More precisely, outside $\mathsf{Bad}(\delta)$ every commit transcript satisfies
+\[
+\Pr[\Acc\mid\tau]\le\max\Bigl(\alpha^-,\ \max\bigl\{\agr(W_0,G):G\in\K[X]_{<L},\ \widehat G(\beta)=g\bigr\}\Bigr)^{s},
+\]
+where $\alpha^-$ is the largest element of $\frac1{n_1}\Z$ smaller than $\alpha$ and
+$\max\emptyset:=0$.
+\end{theorem}
+
+\begin{proof}
+Condition on $\tau$ outside $\mathsf{Bad}(\delta)$. If $\pi_0\ge\alpha$, \cref{lem:master}
+gives $V_0$ with $\widehat V_0(\beta)=g$ and $\pi_0\le\agr(W_0,V_0)$; in particular
+$V_0\in\Lambda_\alpha(W_0)$ and $g\in\{\widehat G(\beta):G\in\Lambda_\alpha(W_0)\}$. If
+$\pi_0<\alpha$ then $\pi_0\le\alpha^-$ because $\pi_0=|Q_1|/n_1\in\frac1{n_1}\Z$. This
+proves the second statement via \cref{lem:passing}(iii). For the first, on the event
+$g\notin\{\widehat G(\beta):G\in\Lambda_\alpha(W_0)\}$ outside $\mathsf{Bad}(\delta)$ we
+must have $\pi_0<\alpha$, so $\Pr[\Acc\mid\tau]\le\alpha^s$; add
+$\Pr[\mathsf{Bad}(\delta)]\le\eps_{\MCA}(\delta)$ from \cref{lem:bad-prob}.
+\end{proof}
+
+\begin{definition}[Reference polynomial]\label{def:reference}
+For $W_0:D_0\to\K$ let $F_\star(W_0)$ be the unique $G\in\K[X]_{<L}$ with
+$\Db(W_0,G)<\theta=\frac{1-\rho}2$ if it exists (\cref{lem:unique-block}), and
+$F_\star(W_0):=\bot$ otherwise. If $W_0$ is $\F$-valued then $F_\star(W_0)\in\F[X]\cup\{\bot\}$.
+\end{definition}
+
+\begin{corollary}[Scalar unique binding]\label{cor:scalar-unique}
+For every scalar prover, with $F_\star:=F_\star(W_0)$,
+\[
+\Pr\Bigl[\Acc\ \wedge\ \bigl(F_\star=\bot\ \vee\ g\ne\widehat F_\star(\beta)\bigr)\Bigr]
+\le\frac{N-B}{|\K|}+\Bigl(\frac{1+\rho}2\Bigr)^{s}.
+\]
+\end{corollary}
+
+\begin{proof}
+Let $\alpha$ be the smallest element of $\frac1{n_1}\Z$ strictly greater than
+$\frac{1+\rho}2$, and $\delta:=1-\alpha<\theta$. Then $\alpha^-\le\frac{1+\rho}2$, and
+$\agr(W_0,G)\ge\alpha$ implies $\Db(W_0,G)<\theta$, so
+$\Lambda_\alpha(W_0)\subseteq\{F_\star\}\setminus\{\bot\}$. Apply \cref{thm:scalar-list}
+and bound $\eps_{\MCA}(\delta)\le(N-B)/|\K|$ by \cref{cor:mca-ud-sum}.
+\end{proof}
+
+\begin{corollary}[Scalar proximity]\label{cor:scalar-proximity}
+If $\Lambda_\alpha(W_0)=\emptyset$ for the committed $W_0$, then
+$\Pr[\Acc]\le\eps_{\MCA}(1-\alpha)+\alpha^s$. In particular, for
+$\alpha=\sqrt\rho+\eta$ with $\eta>0$ and \cref{thm:mca-johnson},
+$\Pr[\Acc]\le\sum_{i<k}\eps^J_{\MCA}(n_{i+1},\rho,a_{i+1},\eta,|\K|)+(\sqrt\rho+\eta)^s$.
+\end{corollary}
+
+\begin{proof}
+Immediate from \cref{thm:scalar-list}, since the set
+$\{\widehat G(\beta):G\in\Lambda_\alpha(W_0)\}$ is empty.
+\end{proof}
