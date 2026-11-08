@@ -1,0 +1,128 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Randomized symbolic FRI commits to a polynomial $f$ in $k$ variables with individual
+degrees $\deg_{Y_i}f<a_i$ through the Reed--Solomon encoding of its mixed-radix Kronecker
+image on a smooth multiplicative domain, and folds with challenges $r_iT$ in which $T$ is
+a formal variable. The terminal message is the polynomial
+$g(T)=f(r_1T,\dots,r_kT)$, so a single run certifies every value of $f$ on the line
+$\{cr:c\in\K\}$. We prove that an accepted $g$ equals $f_\star(rT)$ as a polynomial, where
+$f_\star$ is the unique-decoding reference of the committed word, except with probability
+\[
+\frac{N-B}{|\K|}+\frac{d}{|\K|-1}+\Bigl(\frac{1+\rho}2\Bigr)^{s},
+\]
+for every arity sequence, and we give an explicit attack showing that the factor
+$\frac{1+\rho}2$ is optimal. Up to the Johnson radius we prove list binding, proximity,
+promise binding, session uniqueness and non-equivocation, with query factors
+$\sqrt\rho+\eta$ and $\max(\sqrt\rho+\eta,(\frac{1+\rho}2)^2)$, and reduce the remaining
+gaps to mutual correlated agreement beyond the Johnson radius. For the Goldilocks field
+with $\K=\F_{p^3}$ and $L=2^{20}$, the exact query counts for unique binding at $128$ bits
+are $309,189,155,141$ for rates $\frac12,\frac14,\frac18,\frac1{16}$.
+
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+
+\section*{The problem}
+
+FRI-based polynomial commitments evaluate a committed polynomial at one point per run:
+the folding challenges $\beta_1,\dots,\beta_k$ determine the point, and the final constant
+is the evaluation there. Randomized symbolic FRI replaces each scalar challenge $\beta_i$
+by $r_iT$, with $r_i$ uniform in an extension field $\K$ and $T$ a formal variable. Every
+oracle after the first is then polynomial-valued in $T$, the verifier checks every folding
+relation as an identity in $\K[T]$, and the final message is a polynomial
+$\gt(T)$ of degree at most $d=\sum_i(a_i-1)$. If $\gt$ is bound to the committed
+polynomial, the verifier obtains $f(cr_1,\dots,cr_k)=\gt(c)$ for every $c\in\K$ by local
+evaluation, without further interaction.
+
+The algebra is direct: for an honest prover the fold chain substitutes $Y_i=r_iT$ variable
+by variable, and $\gt=f(rT)$ (\cref{prop:honest}). The question addressed in this text is
+soundness: for which query count $s$ does acceptance imply $\gt=f_\star(rT)$ as a polynomial,
+relative to which reference $f_\star$, and up to which decoding radius. Ordinary FRI
+proximity soundness does not answer it: it bounds the acceptance of words far from the
+code, while binding asks which polynomial the terminal message is tied to when the word
+is close.
+
+\section*{Results}
+
+The setting (\cref{ch:setting}) is a coset $D_0$ of a multiplicative subgroup of
+$\F_q^\times$ of order $N=BL$, an arbitrary arity sequence $a_1,\dots,a_k$ with
+$L=\prod_ia_i$, rate $\rho=1/B$, and a challenge field $\K=\F_{q^e}$. The committed
+polynomials are those with $\deg_{Y_i}<a_i$, embedded by the mixed-radix Kronecker map
+$\kappa$; the multilinear case is $a_i=2$.
+
+\begin{enumerate}[label=\textup{(\arabic*)}]
+\item \textbf{Unique binding} (\cref{thm:unique-binding,thm:ub-tight}). Let $f_\star$ be the
+inverse Kronecker image of the unique polynomial within block distance $\frac{1-\rho}2$ of
+the committed word. The probability of accepting with $F_\star$ undefined or with
+$\gt\ne f_\star(rT)$ is at most $\frac{N-B}{|\K|}+\frac d{|\K|-1}+(\frac{1+\rho}2)^s$, and an
+efficient prover wins with probability at least
+$(1-\frac d{|\K|})(\frac{1+\rho}2-\frac2{n_1})^s$. The query factor depends on $\rho$ only.
+\item \textbf{List binding up to the Johnson radius} (\cref{thm:symbolic-list}). For every
+agreement $\alpha$ at which mutual correlated agreement holds, an accepted $\gt$ equals
+$f_G(rT)$ for some $G$ in the block list $\Lambda_\alpha(W_0)$, except with probability
+$\eps_{\MCA}(1-\alpha)+\frac{\ell_\alpha d}{|\K|-1}+\alpha^s$.
+\item \textbf{Derived notions} (\cref{ch:corollaries}). Proximity, promise binding and session
+uniqueness hold with query factor $\sqrt\rho+\eta$; non-equivocation across two
+sessions on the same commitment holds with factor $\max(\sqrt\rho+\eta,(\frac{1+\rho}2)^2)$.
+\item \textbf{Lower bounds} (\cref{ch:lower-bounds}). Explicit attacks reach
+$\delta_0+\rho$ for promise binding and $(\frac{1+\rho}2)^2$ for non-equivocation. The
+remaining gaps close as soon as mutual correlated agreement holds at these agreements,
+which lie strictly between capacity and the Johnson bound (\cref{prop:gap-mca}).
+\item \textbf{Parameters} (\cref{ch:parameters}). For $p=2^{64}-2^{32}+1$, $\K=\F_{p^3}$,
+$L=2^{20}$ and $\lambda=128$, the exact query counts for unique binding are $309,189,155,141$
+for $\rho=\frac12,\frac14,\frac18,\frac1{16}$, for every arity in $\{2,4,16\}$. At
+$\rho=\frac1{16}$ non-equivocation is tight with $s=71$, conditionally on the explicit
+Johnson-regime MCA constant.
+\item \textbf{Extensions} (\cref{ch:open}). The theory holds verbatim for challenges
+$z_i+\sum_{t\le e}r_{i,t}T^t$, certifying $f$ on arbitrary affine lines and polynomial
+curves, with $d$ replaced by $ed$.
+\end{enumerate}
+
+\section*{Techniques}
+
+\begin{itemize}
+\item \emph{Mutual correlated agreement as the only coding input.} The fold operator is
+the univariate powers generator applied to the fibre components of a word
+(\cref{def:components,def:fold}). In the unique-decoding regime we prove the required MCA
+statement from the proximity gap for curves, with total error $(N-B)/|\K|$ independent of
+the arities (\cref{prop:mca-ud,cor:mca-ud-sum}); up to the Johnson radius it is
+imported~\cite{BCGM26}.
+\item \emph{The master path lemma.} Working with the exact set $P_0$ of accepting starting
+points, a descending induction produces codewords $V_k,\dots,V_0$ with
+$W_i=V_i$ on $P_i$ and full fold $g$ (\cref{lem:master}). No intermediate layer is
+decoded and no independence between the layers of a query path is used.
+\item \emph{A hidden evaluation point.} An analysis-only point $c\in\K^\times$, independent
+of the transcript, couples the symbolic game with a scalar game whose challenges are
+$cr_i$ (\cref{lem:coupling}). The master path lemma applies at $T=c$, and a root count in
+$c$ lifts the conclusion to an identity in $\K[T]$. The same argument shows that checking
+all identities at one random point after the final message gives the same bound.
+\item \emph{A perturbation invisible to the first fold.} The codeword
+$H_Y=h_Y(X^{a_1})$ has first fold $h_Y$ for every challenge
+(\cref{lem:perturbation}); mixing $F$ and $F-H_Y$ across fibres yields all attacks of
+\cref{ch:lower-bounds}.
+\end{itemize}
+
+\section*{Related work}
+
+FRI was introduced in~\cite{BBHR18}; its soundness up to the Johnson radius rests on the
+proximity gaps of~\cite{BCIKS20}, recently sharpened in~\cite{BCHKS25,DKT26}.
+The identification of the final FRI constant with a multilinear evaluation underlies
+BaseFold~\cite{BaseFold} and, over binary towers, FRI-Binius~\cite{DP24}; out-of-domain
+sampling fixes a single list element in DEEP-FRI~\cite{DEEPFRI}, STIR~\cite{STIR} and
+WHIR~\cite{WHIR}. Mutual correlated agreement was formalized in~\cite{WHIR} and proved up
+to the Johnson radius for all polynomial generators in~\cite{BCGM26}; results beyond
+the Johnson radius appear in~\cite{Jo26,DKT26,Jer26}. Fiat--Shamir security of FRI-type
+protocols is analysed in~\cite{BGKTTZ23} via round-by-round soundness~\cite{CCHLRRW19}
+and the BCS transformation~\cite{BCS16}. The present text differs from these in the object
+being bound: the terminal message is a polynomial in $T$, and binding is required as an
+identity of polynomials, which certifies a whole line of evaluations in one run.
+
+\section*{Organization}
+
+\Cref{ch:setting} fixes the domains, codes, Kronecker map and protocol and proves
+completeness. \Cref{ch:mca} develops mutual correlated agreement, unique block decoding
+and the Johnson list bound. \Cref{ch:path} proves the master path lemma for scalar
+folding. \Cref{ch:specialization} reduces the symbolic protocol to it and proves the main
+theorem. \Cref{ch:corollaries} derives the five binding notions, \cref{ch:lower-bounds}
+gives the matching attacks, \cref{ch:parameters} instantiates the bounds, and
+\cref{ch:open} records extensions and open problems.
