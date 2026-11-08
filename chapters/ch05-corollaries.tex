@@ -1,0 +1,224 @@
+\chapter{Binding Notions and Their Bounds}
+\label{ch:corollaries}
+
+This chapter derives, from \cref{thm:symbolic-list,thm:identification}, the bounds for
+five security notions of the symbolic protocol: unique binding, proximity, promise
+binding, session uniqueness and non-equivocation. Each notion is stated as a game on
+the symbolic prover of \cref{def:symbolic-game}. Throughout,
+\[
+\theta=\tfrac{1-\rho}2,\qquad
+\eps_{\mathrm{UD}}:=\frac{N-B}{|\K|},\qquad
+\eps_{\mathrm{SZ}}(\ell):=\Bigl(\ell+\tbinom{\ell}2\Bigr)\frac{d}{|\K|-1}.
+\]
+
+%=====================================================================
+\section{Unique binding}
+%=====================================================================
+
+\begin{definition}[Unique binding game]\label{def:game-A}
+Let $F_\star:=F_\star(W_0)$ be the reference polynomial of \cref{def:reference} and,
+when $F_\star\ne\bot$, $f_\star:=f_{F_\star}=\kappa^{-1}(F_\star)$. The prover wins if
+\[
+\Acc\ \wedge\ \bigl(F_\star=\bot\ \vee\ \gt(T)\ne f_\star(r_1T,\dots,r_kT)\bigr).
+\]
+\end{definition}
+
+By \cref{def:reference}, $F_\star\in\F[X]$ and hence $f_\star\in\Pa(\F)$: the reference
+polynomial has coefficients in the base field.
+
+\begin{theorem}[Unique binding]\label{thm:unique-binding}
+For every symbolic prover and every arity sequence,
+\[
+\Pr[\text{the prover wins the unique binding game}]
+\le\frac{N-B}{|\K|}+\frac{d}{|\K|-1}+\Bigl(\frac{1+\rho}2\Bigr)^{s}.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $\alpha$ be the smallest element of $\frac1{n_1}\Z$ strictly greater than
+$\frac{1+\rho}2$ and $\delta:=1-\alpha<\theta$. Then $\alpha^-\le\frac{1+\rho}2$. If
+$\agr(W_0,G)\ge\alpha$ then $\Db(W_0,G)<\theta$, so
+$\Lambda_\alpha(W_0)\subseteq\{F_\star\}\setminus\{\bot\}$ and $\ell_\alpha\le1$. The
+winning event is therefore contained in the event of \cref{thm:symbolic-list}, which is
+bounded by $\eps_{\MCA}(\delta)+d/(|\K|-1)+(\alpha^-)^s$. Finally
+$\eps_{\MCA}(\delta)\le\eps_{\mathrm{UD}}$ by \cref{cor:mca-ud-sum}.
+\end{proof}
+
+\begin{remark}\label{rem:unique-binding-structure}
+The bound depends on the arities only through $d=\sum_i(a_i-1)$, which enters a term of
+order $d/|\K|$. The query term depends on $\rho$ alone. The next chapter shows that
+the factor $\frac{1+\rho}2$ cannot be improved for this game.
+\end{remark}
+
+%=====================================================================
+\section{Proximity}
+%=====================================================================
+
+\begin{theorem}[Proximity]\label{thm:proximity}
+Let $\alpha\in[\rho,1]$ and $\delta:=1-\alpha$. For every symbolic prover,
+\[
+\Pr\bigl[\Acc\ \wedge\ \Lambda_\alpha(W_0)=\emptyset\bigr]\le\eps_{\MCA}(\delta)+(\alpha^-)^s .
+\]
+In particular, for $\alpha=\sqrt\rho+\eta$ with $\eta>0$, the right-hand side is at most
+$\sum_{i<k}\eps^J_{\MCA}(n_{i+1},\rho,a_{i+1},\eta,|\K|)+(\sqrt\rho+\eta)^s$, and for
+$\alpha$ the smallest element of $\frac1{n_1}\Z$ above $\frac{1+\rho}2$ it is at most
+$\eps_{\mathrm{UD}}+(\frac{1+\rho}2)^s$.
+\end{theorem}
+
+\begin{proof}
+If $\Lambda_\alpha(W_0)=\emptyset$ then the set $Z(\tau)$ in the proof of
+\cref{thm:symbolic-list} is empty, so that proof gives the bound without the root-count
+term. The two instances follow from \cref{thm:mca-johnson} and \cref{cor:mca-ud-sum}.
+\end{proof}
+
+%=====================================================================
+\section{Promise binding}
+%=====================================================================
+
+\begin{lemma}[Lists under a proximity promise]\label{lem:promise-list}
+Let $F\in\K[X]_{<L}$ with $\Db(W_0,F)\le\delta_0$, and let $\alpha>\delta_0+\rho$. Then
+$\Lambda_\alpha(W_0)\subseteq\{F\}$.
+\end{lemma}
+
+\begin{proof}
+Let $G\in\Lambda_\alpha(W_0)$. The fibres over which $W_0=G$ number at least $\alpha n_1$,
+those over which $W_0=F$ at least $(1-\delta_0)n_1$; so $G=F$ on at least
+$(\alpha-\delta_0)n_1>\rho n_1$ fibres. By \cref{lem:codeword-fibres}, $G=F$.
+\end{proof}
+
+\begin{theorem}[Promise binding]\label{thm:promise}
+Let $\delta_0\in[0,1-\rho)$, let $\alpha\in(\delta_0+\rho,1]$ and $\delta:=1-\alpha$. For
+every symbolic prover and every $F\in\K[X]_{<L}$,
+\[
+\Pr\bigl[\Acc\ \wedge\ \Db(W_0,F)\le\delta_0\ \wedge\ \gt\ne f_F(rT)\bigr]
+\le\eps_{\MCA}(\delta)+\frac{d}{|\K|-1}+(\alpha^-)^s .
+\]
+\end{theorem}
+
+\begin{proof}
+On $\Db(W_0,F)\le\delta_0$, \cref{lem:promise-list} gives $\Lambda_\alpha(W_0)\subseteq\{F\}$,
+so $\gt\ne f_F(rT)$ implies $\gt\notin\{f_G(rT):G\in\Lambda_\alpha(W_0)\}$. In the proof of
+\cref{thm:symbolic-list} the list has at most one element, so the root-count term is
+$d/(|\K|-1)$.
+\end{proof}
+
+\begin{remark}\label{rem:promise-johnson}
+With MCA up to the Johnson radius, \cref{thm:promise} applies to every
+$\alpha\ge\max(\sqrt\rho+\eta,\ \delta_0+\rho+\tfrac1{n_1})$. For $\delta_0<\sqrt\rho-\rho$ the
+query factor is therefore $\sqrt\rho+\eta$ rather than $\frac{1+\rho}2$. The promise is a
+property of the committed word and is not checked by the protocol.
+\end{remark}
+
+%=====================================================================
+\section{Session uniqueness}
+%=====================================================================
+
+\begin{theorem}[Session uniqueness]\label{thm:session}
+Let $\alpha\in[\rho,1]$ and $\delta:=1-\alpha$. For every symbolic prover,
+\[
+\Pr\bigl[\Acc\ \wedge\ G(\tau)=\bot\bigr]\le\eps_{\MCA}(\delta)+\eps_{\mathrm{SZ}}(\ell_\alpha)+(\alpha^-)^s,
+\]
+with $G(\tau)$ as in \cref{def:opened}. Outside this event, the accepted $\gt$ equals
+$f_{G(\tau)}(rT)$ for a single $G(\tau)\in\Lambda_\alpha(W_0)$, and every value
+$\gt(c'')$, $c''\in\K$, equals $f_{G(\tau)}(c''r)$.
+\end{theorem}
+
+\begin{proof}
+If $\pi^{\mathrm{sym}}_0<\alpha$ then $\Pr[\Acc\mid\tau]\le(\alpha^-)^s$. If
+$\pi^{\mathrm{sym}}_0\ge\alpha$ and $G(\tau)=\bot$, the event $\mathsf E$ of
+\cref{thm:identification} occurs. The last sentence is \cref{rem:reuse}.
+\end{proof}
+
+%=====================================================================
+\section{Non-equivocation}
+%=====================================================================
+
+\begin{definition}[Equivocation game]\label{def:game-E}
+The prover outputs $W_0:D_0\to\F$ once. Then two sessions $j=1,2$ of
+\cref{prot:sfri} are run sequentially, both with initial oracle $W_0$, with fresh and
+independent challenges $r^{(j)}$ and query points. The prover's strategy in session $2$
+may depend on its entire view of session $1$, including the query points and the
+verdict. Let $\tau_j$ be the commit transcript and $\Acc_j$ the acceptance event of
+session $j$, and $G_j:=G(\tau_j)$ (\cref{def:opened}). The prover wins if
+\[
+\Acc_1\wedge\Acc_2\wedge\bigl(G_1=\bot\ \vee\ G_2=\bot\ \vee\ G_1\ne G_2\bigr).
+\]
+\end{definition}
+
+\begin{theorem}[Non-equivocation]\label{thm:equivocation}
+Let $\alpha\in[\rho,1]$, $\delta:=1-\alpha$, and
+$M:=\max\bigl(\alpha^-,\ (\tfrac{1+\rho}2)^2\bigr)$. For every prover,
+\[
+\Pr[\text{the prover wins the equivocation game}]
+\le2\bigl(\eps_{\MCA}(\delta)+\eps_{\mathrm{SZ}}(\ell_\alpha)\bigr)+M^{s}.
+\]
+\end{theorem}
+
+\begin{proof}
+For $j=1,2$, the prover restricted to session $j$ is a symbolic prover in the sense of
+\cref{def:symbolic-game}: its strategy is randomized by its own coins and, for $j=2$, by
+the independent coins of session $1$, while $r^{(j)}$ is fresh. Let $\mathsf E_j$ be the
+event of \cref{thm:identification} for session $j$; then
+$\Pr[\mathsf E_1\cup\mathsf E_2]\le2(\eps_{\MCA}(\delta)+\eps_{\mathrm{SZ}}(\ell_\alpha))$.
+
+Write $\pi_j:=\pi^{\mathrm{sym}}_0(\tau_j)$ and let $\mathsf C$ be the event
+$\neg\mathsf E_1\wedge\neg\mathsf E_2\wedge(G_1=\bot\vee G_2=\bot\vee G_1\ne G_2)$.
+
+\emph{Claim: on $\mathsf C$, $\pi_1\pi_2\le M$.} If $\pi_1<\alpha$ then
+$\pi_1\le\alpha^-$ and $\pi_1\pi_2\le\alpha^-$; likewise if $\pi_2<\alpha$. If
+$\pi_1,\pi_2\ge\alpha$, then $\neg\mathsf E_j$ gives $G_j\ne\bot$ and
+$\pi_j\le\agr(W_0,G_j)$, and $\mathsf C$ forces $G_1\ne G_2$. The sets
+$A_j:=\{y\in D_1:W_0=G_j\text{ on }\fib(y)\}$ satisfy
+$|A_1\cap A_2|<\rho n_1$ by \cref{lem:codeword-fibres}, so
+$\pi_1+\pi_2\le(|A_1|+|A_2|)/n_1<1+\rho$, and
+$\pi_1\pi_2\le(\frac{1+\rho}2)^2$ by the AM--GM inequality.
+
+\emph{Conditioning.} Let $\mathcal F_1$ be the information up to the end of the commit
+phase of session $1$, and $\mathcal F_2$ the information up to the end of the commit
+phase of session $2$. Then $\Pr[\Acc_1\mid\mathcal F_1]=\pi_1^s$,
+$\Pr[\Acc_2\mid\mathcal F_2]=\pi_2^s$, and $\mathsf C$, $\pi_1$ and $\pi_2$ are
+$\mathcal F_2$-measurable. On $\mathsf C$ the claim gives
+$\pi_2^s\le\min\bigl(1,(M/\pi_1)^s\bigr)$, a quantity $\mathcal F_1$-measurable
+(set to $1$ if $\pi_1=0$). Hence
+\[
+\Pr[\Acc_1\wedge\Acc_2\wedge\mathsf C]
+=\mathbb E\bigl[\mathbf 1_{\Acc_1}\mathbf 1_{\mathsf C}\,\pi_2^s\bigr]
+\le\mathbb E\bigl[\mathbf 1_{\Acc_1}\min(1,(M/\pi_1)^s)\bigr]
+=\mathbb E\bigl[\pi_1^s\min(1,(M/\pi_1)^s)\bigr]\le M^s ,
+\]
+where the middle equality conditions on $\mathcal F_1$ (the event $\Acc_1$ depends only on
+the query points of session $1$, which are independent of $\mathcal F_1$). Since the
+winning event is contained in $\mathsf E_1\cup\mathsf E_2\cup(\Acc_1\wedge\Acc_2\wedge\mathsf C)$,
+the theorem follows.
+\end{proof}
+
+\begin{remark}\label{rem:equivocation-regimes}
+In the unique-decoding regime ($\alpha$ just above $\frac{1+\rho}2$) one has
+$M=\alpha^-\le\frac{1+\rho}2$ and \cref{thm:equivocation} gives nothing beyond
+\cref{thm:unique-binding}. Up to the Johnson radius ($\alpha=\sqrt\rho+\eta$),
+$M=\max(\sqrt\rho+\eta,(\frac{1+\rho}2)^2)$, which is strictly smaller than
+$\frac{1+\rho}2$. For $\rho\in\{\frac12,\frac14,\frac18\}$ one has
+$\sqrt\rho>(\frac{1+\rho}2)^2$, so $M=\sqrt\rho+\eta$; for $\rho=\frac1{16}$,
+$(\frac{17}{32})^2\approx0.2822>\frac14+\eta$ whenever $\eta<0.0322$, so
+$M=(\frac{17}{32})^2$.
+\end{remark}
+
+%=====================================================================
+\section{Summary of query factors}
+%=====================================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lll}
+\hline
+Notion & Query factor (per path) & Coding input\\
+\hline
+Unique binding (\ref{thm:unique-binding}) & $\frac{1+\rho}2$ & MCA, unique decoding (proved)\\
+Proximity (\ref{thm:proximity}) & $\sqrt\rho+\eta$ & MCA up to Johnson\\
+Promise binding (\ref{thm:promise}) & $\max(\sqrt\rho+\eta,\ \delta_0+\rho)$ & MCA up to Johnson\\
+Session uniqueness (\ref{thm:session}) & $\sqrt\rho+\eta$ & MCA up to Johnson\\
+Non-equivocation (\ref{thm:equivocation}) & $\max(\sqrt\rho+\eta,\ (\frac{1+\rho}2)^2)$ & MCA up to Johnson\\
+\hline
+\end{tabular}
+\end{center}
+Each bound adds $\eps_{\MCA}$ and a root-count term of order $\ell_\alpha^2d/|\K|$.

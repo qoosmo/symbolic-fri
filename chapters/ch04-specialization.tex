@@ -106,8 +106,9 @@ most $d$.
 Let $\alpha\in[\rho,1]$ and $\delta:=1-\alpha$. For every symbolic prover,
 \[
 \Pr\Bigl[\Acc\ \wedge\ \gt\notin\bigl\{f_G(rT):G\in\Lambda_\alpha(W_0)\bigr\}\Bigr]
-\ \le\ \eps_{\MCA}(\delta)+\frac{\ell_\alpha\,d}{|\K|-1}+\alpha^{s}.
+\ \le\ \eps_{\MCA}(\delta)+\frac{\ell_\alpha\,d}{|\K|-1}+(\alpha^-)^{s},
 \]
+where $\alpha^-\le\alpha$ is the largest element of $\frac1{n_1}\Z$ smaller than $\alpha$.
 \end{theorem}
 
 \begin{proof}
@@ -137,7 +138,8 @@ $\tau^{(c)}$ yields $V_0\in\Lambda_\alpha(W_0)$ with
 $\widehat V_0(cr)=\gt(c)$, i.e.\ $f_{V_0}(cr)=\gt(c)$ by \cref{lem:full-fold}. Here we
 used that the initial word of $\tau^{(c)}$ is $W_0$ itself, because $W_0$ does not depend
 on $T$. This means $c\in Z(\tau)$, a contradiction. Hence
-$\pi^{\mathrm{sym}}_0<\alpha$ and $\Pr[\Acc\mid\tau]\le\alpha^s$ by
+$\pi^{\mathrm{sym}}_0<\alpha$; since $\pi^{\mathrm{sym}}_0=|Q^{\mathrm{sym}}_1|/n_1\in\frac1{n_1}\Z$,
+$\pi^{\mathrm{sym}}_0\le\alpha^-$ and $\Pr[\Acc\mid\tau]\le(\alpha^-)^s$ by
 \cref{lem:passing-sym}. Summing the three contributions proves the theorem.
 \end{proof}
 
