@@ -218,7 +218,10 @@ folding with $\varphi_{i+1}(T)$ substitutes $Y_{i+1}=\varphi_{i+1}(T)$ in the pr
 $\Fold_{\varphi(T)}[w](y)|_{T=c}=\Fold_{\varphi(c)}[w^{(c)}](y)$.
 \item \emph{Coupling.} Fix $c\in\K^\times$. Given $\beta_{i+1}$ uniform, the scalar prover
 samples $r_{i+1,2},\dots,r_{i+1,e}$ uniformly and sets
-$r_{i+1,1}:=c^{-1}\bigl(\beta_{i+1}-z_{i+1}-\sum_{t\ge2}r_{i+1,t}c^t\bigr)$. For fixed
+\[
+r_{i+1,1}:=c^{-1}\Bigl(\beta_{i+1}-z_{i+1}-\sum_{t\ge2}r_{i+1,t}c^t\Bigr).
+\]
+For fixed
 $(c,r_{i+1,2},\dots,r_{i+1,e})$ this is a bijection between $\beta_{i+1}$ and
 $r_{i+1,1}$, so the simulated vector $(r_{i+1,t})_t$ is uniform on $\K^e$ and independent
 of the history, and $\varphi_{i+1}(c)=\beta_{i+1}$. \Cref{lem:coupling} follows as before.

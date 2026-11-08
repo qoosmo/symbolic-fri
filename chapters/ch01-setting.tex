@@ -1,4 +1,4 @@
-\chapter{Setting: Polynomial Towers, Kronecker Embedding and Symbolic Folding}
+\chapter[Setting: Towers, Kronecker Map, Folding]{Setting: Polynomial Towers, Kronecker Embedding and Symbolic Folding}
 \label{ch:setting}
 
 This chapter fixes all objects used in the rest of the text: the fields, the evaluation
@@ -139,8 +139,10 @@ For $\mathbf a=(2,\dots,2)$ this is the space of multilinear polynomials.
 \end{definition}
 
 \begin{definition}[Tower Kronecker map]\label{def:kronecker}
-$\kappa:\Pa(E)\to E[X]_{<L}$,\quad
-$\kappa(f)(X):=f\bigl(\Sigma_0(X),\Sigma_1(X),\dots,\Sigma_{k-1}(X)\bigr)$.
+The map $\kappa:\Pa(E)\to E[X]_{<L}$ is
+\[
+\kappa(f)(X):=f\bigl(\Sigma_0(X),\Sigma_1(X),\dots,\Sigma_{k-1}(X)\bigr).
+\]
 For $G\in E[X]_{<L}$ write $f_G:=\kappa^{-1}(G)$ (well defined by \cref{lem:kronecker}).
 \end{definition}
 
@@ -323,10 +325,10 @@ $\sum_{l\le i}e_l\le d_i$.
 
 (ii) Write $f=\sum_{j<a_{i+1}}Y_{i+1}^j f_j$ with $f_j$ free of $Y_{i+1}$. Since
 $\Sigma_{i,i}(X)=X$ and $\Sigma_{i,l}=\Sigma_{i+1,l}\circ\sigma_{i+1}$ for $l\ge i+1$,
-\[
-F_i(X,T)=\sum_{j<a_{i+1}}X^j\,\phi_j\bigl(\sigma_{i+1}(X),T\bigr),\qquad
-\phi_j(Z,T):=f_j\bigl(r_1T,\dots,r_iT,\,\cdot\,,\Sigma_{i+1,i+1}(Z),\dots,\Sigma_{i+1,k-1}(Z)\bigr),
-\]
+\begin{align*}
+F_i(X,T)&=\sum_{j<a_{i+1}}X^j\,\phi_j\bigl(\sigma_{i+1}(X),T\bigr),\\
+\phi_j(Z,T)&:=f_j\bigl(r_1T,\dots,r_iT,\,\cdot\,,\Sigma_{i+1,i+1}(Z),\dots,\Sigma_{i+1,k-1}(Z)\bigr),
+\end{align*}
 where the slot of $Y_{i+1}$ is empty since $f_j$ does not depend on it. By (i) applied to
 $f_j$, $\deg_Z\phi_j<L_{i+1}$. By \cref{lem:fold-poly} with $R=\K[T]$ and
 $\beta=r_{i+1}T$,

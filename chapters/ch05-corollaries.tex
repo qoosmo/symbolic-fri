@@ -60,7 +60,10 @@ Let $\alpha\in[\rho,1]$ and $\delta:=1-\alpha$. For every symbolic prover,
 \Pr\bigl[\Acc\ \wedge\ \Lambda_\alpha(W_0)=\emptyset\bigr]\le\eps_{\MCA}(\delta)+(\alpha^-)^s .
 \]
 In particular, for $\alpha=\sqrt\rho+\eta$ with $\eta>0$, the right-hand side is at most
-$\sum_{i<k}\eps^J_{\MCA}(n_{i+1},\rho,a_{i+1},\eta,|\K|)+(\sqrt\rho+\eta)^s$, and for
+\[
+\sum_{i<k}\eps^J_{\MCA}(n_{i+1},\rho,a_{i+1},\eta,|\K|)+(\sqrt\rho+\eta)^s,
+\]
+and for
 $\alpha$ the smallest element of $\frac1{n_1}\Z$ above $\frac{1+\rho}2$ it is at most
 $\eps_{\mathrm{UD}}+(\frac{1+\rho}2)^s$.
 \end{theorem}
@@ -270,12 +273,12 @@ $\Pr[\Acc_2\mid\mathcal F_2]=\pi_2^s$, and $\mathsf C$, $\pi_1$ and $\pi_2$ are
 $\mathcal F_2$-measurable. On $\mathsf C$ the claim gives
 $\pi_2^s\le\min\bigl(1,(M/\pi_1)^s\bigr)$, a quantity $\mathcal F_1$-measurable
 (set to $1$ if $\pi_1=0$). Hence
-\[
+\begin{align*}
 \Pr[\Acc_1\wedge\Acc_2\wedge\mathsf C]
-=\mathbb E\bigl[\mathbf 1_{\Acc_1}\mathbf 1_{\mathsf C}\,\pi_2^s\bigr]
-\le\mathbb E\bigl[\mathbf 1_{\Acc_1}\min(1,(M/\pi_1)^s)\bigr]
-=\mathbb E\bigl[\pi_1^s\min(1,(M/\pi_1)^s)\bigr]\le M^s ,
-\]
+&=\mathbb E\bigl[\mathbf 1_{\Acc_1}\mathbf 1_{\mathsf C}\,\pi_2^s\bigr]
+\le\mathbb E\bigl[\mathbf 1_{\Acc_1}\min(1,(M/\pi_1)^s)\bigr]\\
+&=\mathbb E\bigl[\pi_1^s\min(1,(M/\pi_1)^s)\bigr]\le M^s ,
+\end{align*}
 where the middle equality conditions on $\mathcal F_1$ (the event $\Acc_1$ depends only on
 the query points of session $1$, which are independent of $\mathcal F_1$). Since the
 winning event is contained in $\mathsf E_1\cup\mathsf E_2\cup(\Acc_1\wedge\Acc_2\wedge\mathsf C)$,

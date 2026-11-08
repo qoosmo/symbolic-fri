@@ -53,10 +53,12 @@ An oracle answer is \emph{bad} for its prefix in the following cases.
 $\varphi_{i+1}(c)\in\Bad\bigl(u[W_i^{(c)}],\delta\bigr)$, where $\varphi_{i+1}(T)$ is the
 challenge curve of the protocol ($r_{i+1}T$ or $\zeta_{i+1}+r_{i+1}T$).
 \item \emph{Collapse.} The prefix ends with $W_i$ and, for some $G\ne G'$ in
-$\Lambda(\tau')$, the polynomial $h:=f_G-f_{G'}\ne0$ satisfies:
-$h(\varphi_1(1),\dots,\varphi_i(1),Y_{i+1},\dots,Y_k)\ne0$ but
-$h(\varphi_1(1),\dots,\varphi_{i+1}(1),Y_{i+2},\dots,Y_k)=0$, as polynomials in the remaining
-variables. \textup{(}For \cref{prot:sfri}, $\varphi_j(1)=r_j$.\textup{)}
+$\Lambda(\tau')$, the polynomial $h:=f_G-f_{G'}\ne0$ satisfies, as polynomials in the
+remaining variables,
+\[
+h\bigl(\varphi_1(1),\dots,\varphi_i(1),Y_{i+1},\dots,Y_k\bigr)\ne0,\qquad
+h\bigl(\varphi_1(1),\dots,\varphi_{i+1}(1),Y_{i+2},\dots,Y_k\bigr)=0 .
+\] \textup{(}For \cref{prot:sfri}, $\varphi_j(1)=r_j$.\textup{)}
 \item \emph{Out of domain.} The prefix is $W_0$, the answer is $z$, and two distinct
 elements of $\Lambda(W_0)$ take the same value at $z$.
 \end{enumerate}
@@ -145,8 +147,10 @@ $(\alpha^-)^s$, since the answer is fresh; a union bound over the at most $Q$ su
 gives $Q(\alpha^-)^s$.
 \end{enumerate}
 For unique binding, $\ell_\alpha\le1$, the collapse and out-of-domain terms vanish, and
-$\max_i\eps_{\MCA}(\RS_{i+1},a_{i+1},\delta)\le\max_i(a_{i+1}-1)n_{i+1}/|\K|=(a_1-1)n_1/|\K|$ by
-\cref{prop:mca-ud}, since $(a_{i+1}-1)n_{i+1}=n_i-n_{i+1}$ is decreasing in $i$.
+\[
+\max_i\eps_{\MCA}(\RS_{i+1},a_{i+1},\delta)\le\max_i\frac{(a_{i+1}-1)n_{i+1}}{|\K|}=\frac{(a_1-1)n_1}{|\K|}
+\]
+by \cref{prop:mca-ud}, since $(a_{i+1}-1)n_{i+1}=n_i-n_{i+1}$ is decreasing in $i$.
 \end{proof}
 
 \begin{theorem}[Compiled argument {\cite{BCS16}}]\label{thm:bcs}
