@@ -1,0 +1,330 @@
+\chapter{Setting: Smooth Domains, Kronecker Embedding and Symbolic Folding}
+\label{ch:setting}
+
+This chapter fixes all objects used in the rest of the text: the fields, the smooth
+evaluation domains and their fibres, the Reed--Solomon codes, the mixed-radix Kronecker
+embedding, the fold operator, and the randomized symbolic FRI protocol. It ends with the
+honest invariant, which identifies the terminal polynomial $g(T)$.
+
+%=====================================================================
+\section{Fields and smooth domains}
+%=====================================================================
+
+\begin{definition}[Fields]\label{def:fields}
+Let $q$ be a prime power, $\F:=\F_q$ the \emph{base field}, $e\ge 1$ an integer, and
+$\K:=\F_{q^e}$ the \emph{challenge field}. All verifier challenges, all coefficients in the
+formal variable $T$, and all codes of \cref{def:rs} are over $\K$; the initial committed
+word is over $\F$.
+\end{definition}
+
+\begin{definition}[Smooth domain and arity sequence]\label{def:domain}
+Fix integers $k\ge 1$ and $a_1,\dots,a_k\ge 2$ (the \emph{arities}), and set
+\[
+A_0:=1,\qquad A_i:=a_1a_2\cdots a_i\quad(1\le i\le k),\qquad L:=A_k .
+\]
+Fix an integer $B\ge 2$ (the \emph{blowup}) and set $N:=BL$ and $\rho:=1/B$ (the
+\emph{rate}). Assume $N\mid q-1$, let $H\le\F^\times$ be the unique subgroup of order $N$,
+fix $x_0\in\F^\times$, and put
+\[
+D_0:=x_0H,\qquad D_i:=\{x^{A_i}: x\in D_0\}\quad(0\le i\le k),
+\qquad n_i:=N/A_i,\qquad L_i:=L/A_i .
+\]
+For $\ell\ge1$ write $\mu_\ell:=\{\omega\in\F^\times:\omega^\ell=1\}$.
+\end{definition}
+
+The domain $D_0$ is called \emph{smooth} because the order $N=B\,a_1\cdots a_k$ factors
+through the chosen arities; the binary case of the original protocol is $a_i=2$ for all
+$i$, $k=m$, $L=2^m$.
+
+\begin{lemma}[Fibres]\label{lem:fibres}
+For $0\le i<k$:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $D_i=x_0^{A_i}H^{A_i}$ and $|D_i|=n_i$;
+\item the map $\sigma_{i+1}:D_i\to D_{i+1}$, $x\mapsto x^{a_{i+1}}$, is surjective;
+\item for $y\in D_{i+1}$ and any $x\in\sigma_{i+1}^{-1}(y)$,
+\[
+\fib(y):=\sigma_{i+1}^{-1}(y)=x\,\mu_{a_{i+1}},\qquad |\fib(y)|=a_{i+1}.
+\]
+\end{enumerate}
+In particular $n_i=a_{i+1}n_{i+1}$, $n_k=B$, and $L_i/n_i=\rho$ for every $i$.
+\end{lemma}
+
+\begin{proof}
+(i) Since $(x_0h)^{A_i}=x_0^{A_i}h^{A_i}$, $D_i=x_0^{A_i}H^{A_i}$. As $H$ is cyclic of order
+$N$ and $A_i\mid N$, the subgroup $H^{A_i}$ has order $N/A_i=n_i$.
+(ii) Immediate from $D_{i+1}=\{x^{A_{i+1}}\}=\{(x^{A_i})^{a_{i+1}}\}$.
+(iii) $H^{A_i}$ is cyclic of order $n_i$ and $a_{i+1}\mid n_i$ (because $A_{i+1}\mid N$),
+so the kernel of $z\mapsto z^{a_{i+1}}$ on $H^{A_i}$ is $\mu_{a_{i+1}}\subseteq H^{A_i}$, of
+order $a_{i+1}$. Hence two elements of $D_i$ have the same image iff their ratio lies in
+$\mu_{a_{i+1}}$. The remaining identities follow from $n_i=N/A_i$ and $L_i=L/A_i$.
+\end{proof}
+
+\begin{remark}\label{rem:char}
+Since $\mu_{a_{i+1}}\subseteq\F^\times$ has $a_{i+1}$ elements, $\gcd(a_{i+1},q)=1$; in
+particular every $a_{i+1}$ is invertible in $\F$. This is used in \cref{def:components}.
+\end{remark}
+
+%=====================================================================
+\section{Reed--Solomon codes and agreement}
+%=====================================================================
+
+\begin{definition}[Reed--Solomon codes]\label{def:rs}
+For $0\le i\le k$,
+\[
+\RS_i:=\bigl\{\,G|_{D_i}\;:\;G\in\K[X],\ \deg G<L_i\,\bigr\}\subseteq \K^{D_i}.
+\]
+Its rate is $L_i/n_i=\rho$ and its minimum distance is $n_i-L_i+1$. Since $L_i\le n_i$,
+the map $G\mapsto G|_{D_i}$ is injective on $\K[X]_{<L_i}$, and we identify a codeword with
+its polynomial.
+\end{definition}
+
+\begin{definition}[Pointwise and block agreement]\label{def:agreement}
+For words $w,v:D_i\to\K$ (or $\K[T]$), the \emph{relative agreement} is
+$\mathrm{agr}(w,v):=\frac1{n_i}\#\{x\in D_i: w(x)=v(x)\}$ and $\Delta:=1-\mathrm{agr}$.
+For $i<k$, the \emph{block agreement} is
+\[
+\agr(w,v):=\frac1{n_{i+1}}\#\bigl\{y\in D_{i+1}:\ w|_{\fib(y)}=v|_{\fib(y)}\bigr\},
+\qquad \Db:=1-\agr .
+\]
+For a set $\mathcal C$ of words, $\agr(w,\mathcal C):=\max_{v\in\mathcal C}\agr(w,v)$.
+\end{definition}
+
+\begin{lemma}[Fibre agreement of distinct codewords]\label{lem:codeword-fibres}
+If $G\neq G'$ with $\deg G,\deg G'<L_i$ and $i<k$, then
+\[
+\#\{y\in D_{i+1}: G|_{\fib(y)}=G'|_{\fib(y)}\}\le \frac{L_i-1}{a_{i+1}}<L_{i+1}=\rho\,n_{i+1}.
+\]
+\end{lemma}
+
+\begin{proof}
+Each fibre on which $G$ and $G'$ agree contributes $a_{i+1}$ distinct roots of the nonzero
+polynomial $G-G'$, which has at most $L_i-1$ roots; and $L_i=a_{i+1}L_{i+1}$.
+\end{proof}
+
+%=====================================================================
+\section{The mixed-radix Kronecker embedding}
+%=====================================================================
+
+\begin{definition}[Degree-bounded polynomials]\label{def:Pa}
+For a field $E\in\{\F,\K\}$,
+\[
+\Pa(E):=\bigl\{f\in E[Y_1,\dots,Y_k]:\ \deg_{Y_i}f<a_i\ \text{for }1\le i\le k\bigr\}.
+\]
+For $\mathbf a=(2,\dots,2)$ this is the space of multilinear polynomials.
+\end{definition}
+
+\begin{definition}[Kronecker map]\label{def:kronecker}
+$\kappa:\Pa(E)\to E[X]_{<L}$,\quad
+$\kappa(f)(X):=f\bigl(X^{A_0},X^{A_1},\dots,X^{A_{k-1}}\bigr)$.
+For $G\in E[X]_{<L}$ write $f_G:=\kappa^{-1}(G)$.
+\end{definition}
+
+\begin{lemma}\label{lem:kronecker}
+$\kappa$ is an $E$-linear bijection. Explicitly, the monomial
+$Y^{\mathbf e}:=Y_1^{e_1}\cdots Y_k^{e_k}$ with $0\le e_i<a_i$ is sent to $X^{\nu(\mathbf e)}$
+with $\nu(\mathbf e):=\sum_{i=1}^k e_iA_{i-1}$.
+\end{lemma}
+
+\begin{proof}
+Linearity is clear and $\kappa(Y^{\mathbf e})=\prod_iX^{e_iA_{i-1}}=X^{\nu(\mathbf e)}$.
+The map $\mathbf e\mapsto\nu(\mathbf e)$ from $\prod_i\{0,\dots,a_i-1\}$ to
+$\{0,\dots,L-1\}$ is the mixed-radix expansion with digits $e_i$ and radices $a_i$; it is
+a bijection (both sets have $L$ elements and the expansion of an integer in $[0,L)$ is
+unique). Hence $\kappa$ maps a monomial basis bijectively onto a monomial basis.
+\end{proof}
+
+%=====================================================================
+\section{Components and the fold operator}
+%=====================================================================
+
+Throughout this section fix $0\le i<k$ and write $a:=a_{i+1}$. Let $R$ denote either $\K$
+or $\K[T]$; words take values in $R$.
+
+\begin{definition}[Components]\label{def:components}
+For $w:D_i\to R$, $y\in D_{i+1}$, $x\in\fib(y)$ and $0\le j<a$, put
+\[
+u_j[w](y):=\frac1a\sum_{\omega\in\mu_a}(\omega x)^{-j}\,w(\omega x).
+\]
+\end{definition}
+
+\begin{lemma}[Components]\label{lem:components}
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $u_j[w](y)$ does not depend on the choice of $x\in\fib(y)$.
+\item For every $y\in D_{i+1}$ the map
+$R^{\fib(y)}\to R^a$, $w|_{\fib(y)}\mapsto(u_j[w](y))_{j<a}$, is an $R$-linear bijection;
+its inverse is $w(x)=\sum_{j<a}x^ju_j[w](x^a)$.
+\item If $w=G|_{D_i}$ with $G=\sum_{j<a}X^jG_j(X^a)$, $G_j\in R[X]$, then
+$u_j[w]=G_j|_{D_{i+1}}$. In particular, if $\deg_XG<L_i$ then $u_j[w]\in\RS_{i+1}$
+\textup{(}coefficientwise in $T$ when $R=\K[T]$\textup{)}.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(i) Replacing $x$ by $\omega'x$ with $\omega'\in\mu_a$ and substituting
+$\omega''=\omega\omega'$ gives
+$\frac1a\sum_{\omega''}(\omega''x)^{-j}w(\omega''x)$, the same sum.
+(ii) Write $w(\omega x)=\sum_{j<a}(\omega x)^jc_j$ with unknowns $c_j\in R$. The matrix
+$\bigl((\omega x)^j\bigr)_{\omega,j}=\bigl(\omega^j\bigr)_{\omega,j}\cdot\mathrm{diag}(x^j)$
+is a Vandermonde matrix on the $a$ distinct elements of $x\mu_a$, hence invertible; and by
+orthogonality $\frac1a\sum_{\omega\in\mu_a}\omega^{t}=[a\mid t]$ the unique solution is
+$c_j=u_j[w](y)$. This proves both the bijectivity and the inversion formula.
+(iii) For $G=\sum_jX^jG_j(X^a)$ we have $G(\omega x)=\sum_j(\omega x)^jG_j(y)$, so by the
+uniqueness in (ii) $u_j[w](y)=G_j(y)$. If $\deg_XG<L_i=aL_{i+1}$ then $\deg G_j<L_{i+1}$.
+\end{proof}
+
+\begin{definition}[Fold]\label{def:fold}
+For $w:D_i\to R$ and $\beta\in R$,
+\[
+\Fold_\beta[w]:D_{i+1}\to R,\qquad \Fold_\beta[w]:=\sum_{j<a}\beta^j\,u_j[w].
+\]
+For $a=2$ this is
+$\Fold_\beta[w](x^2)=\frac{w(x)+w(-x)}2+\beta\,\frac{w(x)-w(-x)}{2x}$.
+\end{definition}
+
+\begin{lemma}[Fold of a polynomial]\label{lem:fold-poly}
+If $G=\sum_{j<a}X^jG_j(X^a)\in R[X]$ with $\deg_XG<L_i$, then
+$\Fold_\beta[G|_{D_i}]=\bigl(\sum_{j<a}\beta^jG_j\bigr)\big|_{D_{i+1}}$, a polynomial of
+$X$-degree $<L_{i+1}$. In particular $\Fold_\beta$ maps $\RS_i$ into $\RS_{i+1}$ for
+$\beta\in\K$.
+\end{lemma}
+
+\begin{proof}
+\Cref{lem:components}(iii) and linearity.
+\end{proof}
+
+\begin{definition}[Full fold]\label{def:full-fold}
+For $G\in\K[X]_{<L}$ and $\beta=(\beta_1,\dots,\beta_k)\in\K^k$ put
+$G^{(0)}:=G$ and $G^{(i+1)}:=\Fold_{\beta_{i+1}}[G^{(i)}]$ (as polynomials, via
+\cref{lem:fold-poly}). Then $G^{(k)}$ has degree $<L_k=1$, i.e.\ is a constant, denoted
+$\widehat G(\beta)$.
+\end{definition}
+
+\begin{lemma}[Full fold evaluates $f_G$]\label{lem:full-fold}
+For all $G\in\K[X]_{<L}$ and $\beta\in\K^k$: $\widehat G(\beta)=f_G(\beta_1,\dots,\beta_k)$.
+\end{lemma}
+
+\begin{proof}
+Apply \cref{prop:honest} below with $f=f_G$ and $r=\beta$: by part (ii) and
+\cref{lem:specialization} with $c=1$, the scalar fold chain of $G$ with challenges $\beta$
+is $F_i(\,\cdot\,,1)$, and by part (iii) its last term is $g(1)=f_G(\beta)$.
+\end{proof}
+
+%=====================================================================
+\section{The randomized symbolic FRI protocol}
+%=====================================================================
+
+\begin{definition}[Degree caps]\label{def:degree-caps}
+$d_0:=0$, $d_i:=\sum_{l=1}^{i}(a_l-1)$ for $1\le i\le k$, and $d:=d_k$.
+For $\mathbf a=(2,\dots,2)$, $d_i=i$ and $d=k$.
+\end{definition}
+
+\begin{protocol}[Randomized symbolic FRI]\label{prot:sfri}
+Public parameters: $\F,\K,H,x_0,\mathbf a,B$ as above, and a number $s\ge1$ of query
+paths. Words at layer $i\ge1$ take values in $\K[T]_{\le d_i}$, encoded as fixed-length
+coefficient vectors; leaves are grouped by fibre.
+
+\smallskip\noindent\textbf{Commit phase.}
+\begin{enumerate}[label=\textup{C\arabic*.}]
+\item $\mathsf P$ sends an oracle $W_0:D_0\to\F$.
+\item For $i=0,\dots,k-1$: $\mathsf V$ samples $r_{i+1}\leftarrow\K$ uniformly and sends it;
+$\mathsf P$ sends an oracle $W_{i+1}:D_{i+1}\to\K[T]_{\le d_{i+1}}$.
+\item $\mathsf P$ sends $\gt\in\K[T]$; $\mathsf V$ rejects unless $\deg\gt\le d$.
+\end{enumerate}
+
+\smallskip\noindent\textbf{Query phase.} Repeat $s$ times independently:
+\begin{enumerate}[label=\textup{Q\arabic*.}]
+\item $\mathsf V$ samples $x_0\leftarrow D_0$ uniformly and sets
+$x_{i+1}:=x_i^{a_{i+1}}$ for $0\le i<k$.
+\item For $0\le i<k$, $\mathsf V$ reads $W_i$ on $\fib(x_{i+1})$ and $W_{i+1}(x_{i+1})$ and
+checks the identity in $\K[T]$
+\[
+W_{i+1}(x_{i+1})=\Fold_{r_{i+1}T}[W_i](x_{i+1}).
+\]
+\item $\mathsf V$ checks $W_k(x_k)=\gt$ in $\K[T]$.
+\end{enumerate}
+$\mathsf V$ accepts iff all checks of all $s$ repetitions pass. The event of acceptance is
+denoted $\Acc$.
+\end{protocol}
+
+\begin{remark}[Variants covered by the analysis]\label{rem:variants}
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item The oracle $W_k$ may be omitted, in which case Q3 is merged into Q2 for $i=k-1$ as
+$\Fold_{r_kT}[W_{k-1}](x_k)=\gt$. Alternatively $\mathsf V$ may read all $B$ values of $W_k$.
+All results of this text hold for each variant.
+\item The values of $W_0$ lie in $\F\subset\K[T]_{\le 0}$ by the encoding; a leaf that is not
+a constant is rejected. This is the only degree condition used by the soundness analysis
+besides $\deg\gt\le d$; the caps $d_i$ for $1\le i<k$ only fix the encoding length.
+\item By \cref{lem:fibres}, each $x_i$ in Q1 is uniform on $D_i$.
+\end{enumerate}
+\end{remark}
+
+%=====================================================================
+\section{Honest invariant and completeness}
+%=====================================================================
+
+\begin{proposition}[Honest invariant]\label{prop:honest}
+Let $f\in\Pa(\K)$ and $r=(r_1,\dots,r_k)\in\K^k$. For $0\le i\le k$ define
+\[
+F_i(X,T):=f\Bigl(r_1T,\dots,r_iT,\;X^{A_i/A_i},\;X^{A_{i+1}/A_i},\;\dots,\;X^{A_{k-1}/A_i}\Bigr)
+\in\K[X,T].
+\]
+Then
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $F_0=\kappa(f)$, $\deg_XF_i<L_i$ and $\deg_TF_i\le d_i$;
+\item $F_{i+1}|_{D_{i+1}}=\Fold_{r_{i+1}T}\bigl[F_i|_{D_i}\bigr]$ for $0\le i<k$;
+\item $F_k=g(T):=f(r_1T,\dots,r_kT)$, and $\deg g\le d$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) $F_0=\kappa(f)$ by definition. In $F_i$ the variable $Y_l$ ($l>i$) is replaced by
+$X^{A_{l-1}/A_i}$, so a monomial $Y^{\mathbf e}$ contributes $X$-degree
+$\sum_{l>i}e_lA_{l-1}/A_i\le\sum_{l>i}(a_l-1)A_{l-1}/A_i=A_k/A_i-1=L_i-1$ (telescoping),
+and $T$-degree $\sum_{l\le i}e_l\le d_i$.
+
+(ii) Write $f=\sum_{j<a_{i+1}}Y_{i+1}^j f_j$ with $f_j$ free of $Y_{i+1}$. Substituting
+$Y_{i+1}=X$ and $Y_l=X^{A_{l-1}/A_i}=(X^{a_{i+1}})^{A_{l-1}/A_{i+1}}$ for $l\ge i+2$ gives
+\[
+F_i(X,T)=\sum_{j<a_{i+1}}X^j\,\phi_j(X^{a_{i+1}},T),\qquad
+\phi_j(Z,T):=f_j\bigl(r_1T,\dots,r_iT,\,\cdot\,,Z^{A_{i+1}/A_{i+1}},\dots,Z^{A_{k-1}/A_{i+1}}\bigr),
+\]
+where the slot of $Y_{i+1}$ is empty since $f_j$ does not depend on it. By (i) applied to
+$f_j$, $\deg_Z\phi_j<L_{i+1}$. By \cref{lem:fold-poly} with $R=\K[T]$ and
+$\beta=r_{i+1}T$,
+\[
+\Fold_{r_{i+1}T}[F_i|_{D_i}]=\Bigl(\sum_{j}(r_{i+1}T)^j\phi_j(Y,T)\Bigr)\Big|_{Y\in D_{i+1}} .
+\]
+The polynomial $\sum_j(r_{i+1}T)^j\phi_j(Y,T)$ is $f$ with $Y_l=r_lT$ for $l\le i+1$ and
+$Y_l=Y^{A_{l-1}/A_{i+1}}$ for $l\ge i+2$, i.e.\ it is $F_{i+1}(Y,T)$.
+(iii) For $i=k$ no variable remains; $\deg g\le d_k=d$ by (i).
+\end{proof}
+
+\begin{corollary}[Completeness]\label{cor:completeness}
+If $W_0=\kappa(f)|_{D_0}$ for some $f\in\Pa(\F)$, $W_i=F_i|_{D_i}$ for $1\le i\le k$ and
+$\gt=g$, then $\mathsf V$ accepts with probability $1$. Moreover $\deg_TW_i\le d_i$, so the
+encoding of \cref{prot:sfri} suffices.
+\end{corollary}
+
+\begin{proof}
+\Cref{prop:honest}(ii),(iii); $F_0$ has coefficients in $\F$ because $f$ does.
+\end{proof}
+
+\begin{lemma}[Scalar specialization]\label{lem:specialization}
+Let $w:D_i\to\K[T]$, $r\in\K$ and $c\in\K$. Writing $w^{(c)}(x):=w(x)(c)$,
+\[
+\Fold_{rT}[w](y)\big|_{T=c}=\Fold_{cr}\bigl[w^{(c)}\bigr](y)\qquad(y\in D_{i+1}).
+\]
+Consequently, every check Q2/Q3 that holds in $\K[T]$ holds after evaluation at $T=c$ for
+the scalar challenge $cr_{i+1}$.
+\end{lemma}
+
+\begin{proof}
+$u_j[w](y)$ is a $\K$-linear combination of the values $w(\omega x)$, so evaluation at
+$T=c$ commutes with $u_j$; then $(rT)^j|_{T=c}=(cr)^j$.
+\end{proof}
+
+\begin{remark}[Binary case]\label{rem:binary}
+For $\mathbf a=(2,\dots,2)$, $k=m$: $\Pa$ is the multilinear space, $\kappa$ is the
+Kronecker substitution $X_i\mapsto X^{2^{i-1}}$, $d=m$, and \cref{prot:sfri} is exactly the
+protocol of the original handoff, with $g(T)=f(r_1T,\dots,r_mT)$.
+\end{remark}
